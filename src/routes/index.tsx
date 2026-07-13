@@ -285,7 +285,8 @@ function FilterPanel({
             onValueChange={(v) => {
               const next = v === "all" ? undefined : v;
               setIlceInput("");
-              navigate({ search: (prev) => ({ ...prev, sehir: next, ilce: undefined }) });
+              setParam("ilce", undefined);
+              setParam("sehir", next);
             }}
           >
             <SelectTrigger className="h-10 mt-1.5 bg-surface"><SelectValue placeholder="Tüm İller" /></SelectTrigger>
