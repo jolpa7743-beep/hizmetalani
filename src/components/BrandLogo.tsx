@@ -15,10 +15,10 @@ export function BrandLogo({ className = "" }: { className?: string }) {
         </defs>
       </svg>
       <div className="leading-tight">
-        <div className="font-bold text-[17px] tracking-tight text-foreground">
+        <div className="text-display text-[18px] text-foreground">
           hizmetalanı<span className="text-brand-accent">.com</span>
         </div>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
           İş & Hizmet İlanları
         </div>
       </div>
