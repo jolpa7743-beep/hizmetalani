@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Users, ListChecks, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -20,6 +20,7 @@ function AdminLayout() {
     { to: "/admin", label: "Panel", icon: LayoutDashboard, exact: true },
     { to: "/admin/kullanicilar", label: "Kullanıcılar", icon: Users },
     { to: "/admin/ilanlar", label: "İlanlar", icon: ListChecks },
+    { to: "/admin/loglar", label: "Loglar", icon: ScrollText },
   ];
   const isActive = (to: string, exact?: boolean) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
