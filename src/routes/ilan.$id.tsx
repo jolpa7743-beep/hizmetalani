@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { CATEGORY_MAP, TYPE_LABEL, formatPrice, type CategoryKey, type ListingType } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft } from "lucide-react";
+import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/ilan/$id")({

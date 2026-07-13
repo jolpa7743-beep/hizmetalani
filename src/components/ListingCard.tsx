@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { MapPin } from "lucide-react";
+import { MapPin, Eye } from "lucide-react";
 import { CATEGORY_MAP, TYPE_LABEL, formatPrice, type CategoryKey, type ListingType } from "@/lib/categories";
 
 export type ListingRow = {
@@ -13,15 +13,14 @@ export type ListingRow = {
   price_type: string;
   created_at: string;
   description: string;
+  view_count?: number;
 };
 
 function shortDate(iso: string) {
   const d = new Date(iso);
   const today = new Date();
   const isToday = d.toDateString() === today.toDateString();
-  if (isToday) {
-    return d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
-  }
+  if (isToday) return d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
   return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
 }
 
@@ -33,57 +32,48 @@ export function ListingCard({ item }: { item: ListingRow }) {
       to="/ilan/$id"
       params={{ id: item.id }}
       aria-label={`${item.title} — ${item.city}${item.district ? ` / ${item.district}` : ""}`}
-      className="group grid grid-cols-[64px_1fr_auto] sm:grid-cols-[84px_1fr_140px_110px] items-center gap-3 sm:gap-4 border-b border-border bg-surface px-3 py-3 sm:px-4 transition-colors hover:bg-brand-soft/60 focus-visible:bg-brand-soft/60 first:rounded-t-xl last:rounded-b-xl last:border-b-0"
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-elevated)] focus-visible:-translate-y-0.5"
     >
-      {/* Thumbnail */}
+      {/* Görsel alan */}
       <div
-        className="grid place-items-center size-16 sm:size-[72px] rounded-md bg-gradient-to-br from-brand/10 via-brand-soft to-brand-accent/15 text-3xl sm:text-[32px] ring-1 ring-inset ring-border/60"
+        className="relative h-32 grid place-items-center bg-gradient-to-br from-brand/10 via-brand-soft to-brand-accent/15 text-5xl"
         aria-hidden
       >
         <span>{cat?.emoji ?? "🔧"}</span>
+        <span
+          className={
+            "absolute left-2 top-2 inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide " +
+            (isOffering ? "bg-brand text-brand-foreground" : "bg-success/90 text-success-foreground")
+          }
+        >
+          {TYPE_LABEL[item.type]}
+        </span>
+        {typeof item.view_count === "number" && item.view_count > 0 && (
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-sm bg-foreground/60 px-1.5 py-0.5 text-[10px] font-medium text-background">
+            <Eye className="size-3" /> {item.view_count}
+          </span>
+        )}
       </div>
 
-      {/* Title + meta */}
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-          <span
-            className={
-              "inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide " +
-              (isOffering
-                ? "bg-brand text-brand-foreground"
-                : "bg-success/15 text-success")
-            }
-          >
-            {TYPE_LABEL[item.type]}
-          </span>
-          <span className="text-[11px] text-muted-foreground">{cat?.short}</span>
-        </div>
-        <h3 className="font-semibold text-[15px] text-foreground leading-snug line-clamp-2 group-hover:text-brand">
+      {/* İçerik */}
+      <div className="flex flex-1 flex-col p-3">
+        <div className="text-[11px] text-muted-foreground">{cat?.short}</div>
+        <h3 className="mt-0.5 font-semibold text-[15px] text-foreground leading-snug line-clamp-2 group-hover:text-brand">
           {item.title}
         </h3>
-        {/* Mobile-only location/date under title */}
-        <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground sm:hidden">
-          <span className="inline-flex items-center gap-1 truncate">
-            <MapPin className="size-3.5 shrink-0" aria-hidden />
-            <span className="truncate">{item.city}{item.district ? ` / ${item.district}` : ""}</span>
-          </span>
-          <span className="tabular-nums whitespace-nowrap">{shortDate(item.created_at)}</span>
-        </div>
-      </div>
 
-      {/* Location column (desktop) */}
-      <div className="hidden sm:block text-sm text-foreground/80 min-w-0">
-        <div className="font-medium truncate">{item.city}</div>
-        {item.district && <div className="text-xs text-muted-foreground truncate">{item.district}</div>}
-      </div>
-
-      {/* Price + date column */}
-      <div className="text-right whitespace-nowrap">
-        <div className="text-brand font-bold text-[15px] sm:text-base tabular-nums">
-          {formatPrice(item.price, item.price_type)}
+        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground min-w-0">
+          <MapPin className="size-3.5 shrink-0" aria-hidden />
+          <span className="truncate">{item.city}{item.district ? ` / ${item.district}` : ""}</span>
         </div>
-        <div className="hidden sm:block text-[11px] text-muted-foreground mt-0.5 tabular-nums">
-          {shortDate(item.created_at)}
+
+        <div className="mt-3 flex items-end justify-between gap-2 pt-2 border-t border-border">
+          <div className="text-brand font-bold text-[15px] tabular-nums">
+            {formatPrice(item.price, item.price_type)}
+          </div>
+          <time dateTime={item.created_at} className="text-[11px] text-muted-foreground tabular-nums">
+            {shortDate(item.created_at)}
+          </time>
         </div>
       </div>
     </Link>
