@@ -60,12 +60,23 @@ function Combo({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const listRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
     const q = norm(query.trim());
     if (!q) return options;
     return options.filter((o) => norm(o).includes(q));
   }, [options, query]);
+
+  // Açılışta seçili öğeyi görünür kıl
+  useEffect(() => {
+    if (!open || !value) return;
+    const t = window.setTimeout(() => {
+      const el = listRef.current?.querySelector<HTMLElement>(`[data-value="${CSS.escape(value)}"]`);
+      el?.scrollIntoView({ block: "nearest" });
+    }, 30);
+    return () => window.clearTimeout(t);
+  }, [open, value]);
 
   return (
     <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQuery(""); }}>
@@ -78,7 +89,7 @@ function Combo({
           disabled={disabled}
           className="h-11 mt-1.5 w-full justify-between font-normal"
         >
-          <span className="inline-flex items-center gap-2 truncate">
+          <span className="inline-flex items-center gap-2 truncate min-w-0">
             <MapPin className="size-4 text-muted-foreground shrink-0" />
             <span className={cn("truncate", !value && "text-muted-foreground")}>
               {value || placeholder}
@@ -88,23 +99,29 @@ function Combo({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover pointer-events-auto"
+        className="w-[--radix-popover-trigger-width] p-0 z-[60] bg-popover pointer-events-auto"
         align="start"
         sideOffset={4}
+        onOpenAutoFocus={(e) => {
+          // input auto-focus tamam, ancak scroll'a müdahale etme
+          void e;
+        }}
       >
-        <Command shouldFilter={false}>
+        {/* Command'a value verirsek açılışta doğru öğe aktif olur */}
+        <Command shouldFilter={false} value={value || ALL_TOKEN}>
           <CommandInput
             placeholder="Ara..."
             className="h-10"
             value={query}
             onValueChange={setQuery}
           />
-          <CommandList className="max-h-72 overflow-y-auto">
+          <CommandList ref={listRef} className="max-h-72 overflow-y-auto">
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
               {allText && !query && (
                 <CommandItem
                   value={ALL_TOKEN}
+                  data-value={ALL_TOKEN}
                   onSelect={() => { onChange(""); setOpen(false); setQuery(""); }}
                 >
                   <Check className={cn("mr-2 size-4", !value ? "opacity-100" : "opacity-0")} />
@@ -115,7 +132,9 @@ function Combo({
                 <CommandItem
                   key={o}
                   value={o}
+                  data-value={o}
                   onSelect={() => { onChange(o); setOpen(false); setQuery(""); }}
+                  className={cn(value === o && "bg-accent/60 font-medium")}
                 >
                   <Check className={cn("mr-2 size-4", value === o ? "opacity-100" : "opacity-0")} />
                   {o}
