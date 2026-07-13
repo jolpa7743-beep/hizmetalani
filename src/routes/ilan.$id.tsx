@@ -391,3 +391,13 @@ function ListingDetail() {
     </div>
   );
 }
+
+function InfoBox({ label, value }: { label: string; value: string }) {
+  const isNeg = value === NEG || !value;
+  return (
+    <div className="rounded-lg border border-border bg-background/50 p-3">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className={`font-medium mt-1 ${isNeg ? "text-muted-foreground italic" : ""}`}>{value || NEG}</div>
+    </div>
+  );
+}
