@@ -9,38 +9,310 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NasilCalisirRouteImport } from './routes/nasil-calisir'
+import { Route as KvkkRouteImport } from './routes/kvkk'
+import { Route as KullanimKosullariRouteImport } from './routes/kullanim-kosullari'
+import { Route as IletisimRouteImport } from './routes/iletisim'
+import { Route as HakkimizdaRouteImport } from './routes/hakkimizda'
+import { Route as GuvenlikRouteImport } from './routes/guvenlik'
+import { Route as GizlilikRouteImport } from './routes/gizlilik'
+import { Route as CerezPolitikasiRouteImport } from './routes/cerez-politikasi'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IlanIdRouteImport } from './routes/ilan.$id'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated.profil'
+import { Route as AuthenticatedMesajlarRouteImport } from './routes/_authenticated.mesajlar'
+import { Route as AuthenticatedIlanlarimRouteImport } from './routes/_authenticated.ilanlarim'
+import { Route as AuthenticatedIlanVerRouteImport } from './routes/_authenticated.ilan-ver'
+import { Route as AuthenticatedMesajlarIdRouteImport } from './routes/_authenticated.mesajlar.$id'
 
+const NasilCalisirRoute = NasilCalisirRouteImport.update({
+  id: '/nasil-calisir',
+  path: '/nasil-calisir',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KvkkRoute = KvkkRouteImport.update({
+  id: '/kvkk',
+  path: '/kvkk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KullanimKosullariRoute = KullanimKosullariRouteImport.update({
+  id: '/kullanim-kosullari',
+  path: '/kullanim-kosullari',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IletisimRoute = IletisimRouteImport.update({
+  id: '/iletisim',
+  path: '/iletisim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HakkimizdaRoute = HakkimizdaRouteImport.update({
+  id: '/hakkimizda',
+  path: '/hakkimizda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuvenlikRoute = GuvenlikRouteImport.update({
+  id: '/guvenlik',
+  path: '/guvenlik',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GizlilikRoute = GizlilikRouteImport.update({
+  id: '/gizlilik',
+  path: '/gizlilik',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CerezPolitikasiRoute = CerezPolitikasiRouteImport.update({
+  id: '/cerez-politikasi',
+  path: '/cerez-politikasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IlanIdRoute = IlanIdRouteImport.update({
+  id: '/ilan/$id',
+  path: '/ilan/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMesajlarRoute = AuthenticatedMesajlarRouteImport.update({
+  id: '/mesajlar',
+  path: '/mesajlar',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedIlanlarimRoute = AuthenticatedIlanlarimRouteImport.update({
+  id: '/ilanlarim',
+  path: '/ilanlarim',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedIlanVerRoute = AuthenticatedIlanVerRouteImport.update({
+  id: '/ilan-ver',
+  path: '/ilan-ver',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMesajlarIdRoute = AuthenticatedMesajlarIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedMesajlarRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/cerez-politikasi': typeof CerezPolitikasiRoute
+  '/gizlilik': typeof GizlilikRoute
+  '/guvenlik': typeof GuvenlikRoute
+  '/hakkimizda': typeof HakkimizdaRoute
+  '/iletisim': typeof IletisimRoute
+  '/kullanim-kosullari': typeof KullanimKosullariRoute
+  '/kvkk': typeof KvkkRoute
+  '/nasil-calisir': typeof NasilCalisirRoute
+  '/ilan-ver': typeof AuthenticatedIlanVerRoute
+  '/ilanlarim': typeof AuthenticatedIlanlarimRoute
+  '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
+  '/profil': typeof AuthenticatedProfilRoute
+  '/ilan/$id': typeof IlanIdRoute
+  '/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/cerez-politikasi': typeof CerezPolitikasiRoute
+  '/gizlilik': typeof GizlilikRoute
+  '/guvenlik': typeof GuvenlikRoute
+  '/hakkimizda': typeof HakkimizdaRoute
+  '/iletisim': typeof IletisimRoute
+  '/kullanim-kosullari': typeof KullanimKosullariRoute
+  '/kvkk': typeof KvkkRoute
+  '/nasil-calisir': typeof NasilCalisirRoute
+  '/ilan-ver': typeof AuthenticatedIlanVerRoute
+  '/ilanlarim': typeof AuthenticatedIlanlarimRoute
+  '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
+  '/profil': typeof AuthenticatedProfilRoute
+  '/ilan/$id': typeof IlanIdRoute
+  '/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/cerez-politikasi': typeof CerezPolitikasiRoute
+  '/gizlilik': typeof GizlilikRoute
+  '/guvenlik': typeof GuvenlikRoute
+  '/hakkimizda': typeof HakkimizdaRoute
+  '/iletisim': typeof IletisimRoute
+  '/kullanim-kosullari': typeof KullanimKosullariRoute
+  '/kvkk': typeof KvkkRoute
+  '/nasil-calisir': typeof NasilCalisirRoute
+  '/_authenticated/ilan-ver': typeof AuthenticatedIlanVerRoute
+  '/_authenticated/ilanlarim': typeof AuthenticatedIlanlarimRoute
+  '/_authenticated/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/ilan/$id': typeof IlanIdRoute
+  '/_authenticated/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/cerez-politikasi'
+    | '/gizlilik'
+    | '/guvenlik'
+    | '/hakkimizda'
+    | '/iletisim'
+    | '/kullanim-kosullari'
+    | '/kvkk'
+    | '/nasil-calisir'
+    | '/ilan-ver'
+    | '/ilanlarim'
+    | '/mesajlar'
+    | '/profil'
+    | '/ilan/$id'
+    | '/mesajlar/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/cerez-politikasi'
+    | '/gizlilik'
+    | '/guvenlik'
+    | '/hakkimizda'
+    | '/iletisim'
+    | '/kullanim-kosullari'
+    | '/kvkk'
+    | '/nasil-calisir'
+    | '/ilan-ver'
+    | '/ilanlarim'
+    | '/mesajlar'
+    | '/profil'
+    | '/ilan/$id'
+    | '/mesajlar/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/cerez-politikasi'
+    | '/gizlilik'
+    | '/guvenlik'
+    | '/hakkimizda'
+    | '/iletisim'
+    | '/kullanim-kosullari'
+    | '/kvkk'
+    | '/nasil-calisir'
+    | '/_authenticated/ilan-ver'
+    | '/_authenticated/ilanlarim'
+    | '/_authenticated/mesajlar'
+    | '/_authenticated/profil'
+    | '/ilan/$id'
+    | '/_authenticated/mesajlar/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  CerezPolitikasiRoute: typeof CerezPolitikasiRoute
+  GizlilikRoute: typeof GizlilikRoute
+  GuvenlikRoute: typeof GuvenlikRoute
+  HakkimizdaRoute: typeof HakkimizdaRoute
+  IletisimRoute: typeof IletisimRoute
+  KullanimKosullariRoute: typeof KullanimKosullariRoute
+  KvkkRoute: typeof KvkkRoute
+  NasilCalisirRoute: typeof NasilCalisirRoute
+  IlanIdRoute: typeof IlanIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/nasil-calisir': {
+      id: '/nasil-calisir'
+      path: '/nasil-calisir'
+      fullPath: '/nasil-calisir'
+      preLoaderRoute: typeof NasilCalisirRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kvkk': {
+      id: '/kvkk'
+      path: '/kvkk'
+      fullPath: '/kvkk'
+      preLoaderRoute: typeof KvkkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kullanim-kosullari': {
+      id: '/kullanim-kosullari'
+      path: '/kullanim-kosullari'
+      fullPath: '/kullanim-kosullari'
+      preLoaderRoute: typeof KullanimKosullariRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/iletisim': {
+      id: '/iletisim'
+      path: '/iletisim'
+      fullPath: '/iletisim'
+      preLoaderRoute: typeof IletisimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hakkimizda': {
+      id: '/hakkimizda'
+      path: '/hakkimizda'
+      fullPath: '/hakkimizda'
+      preLoaderRoute: typeof HakkimizdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guvenlik': {
+      id: '/guvenlik'
+      path: '/guvenlik'
+      fullPath: '/guvenlik'
+      preLoaderRoute: typeof GuvenlikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gizlilik': {
+      id: '/gizlilik'
+      path: '/gizlilik'
+      fullPath: '/gizlilik'
+      preLoaderRoute: typeof GizlilikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cerez-politikasi': {
+      id: '/cerez-politikasi'
+      path: '/cerez-politikasi'
+      fullPath: '/cerez-politikasi'
+      preLoaderRoute: typeof CerezPolitikasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +320,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ilan/$id': {
+      id: '/ilan/$id'
+      path: '/ilan/$id'
+      fullPath: '/ilan/$id'
+      preLoaderRoute: typeof IlanIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/mesajlar': {
+      id: '/_authenticated/mesajlar'
+      path: '/mesajlar'
+      fullPath: '/mesajlar'
+      preLoaderRoute: typeof AuthenticatedMesajlarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ilanlarim': {
+      id: '/_authenticated/ilanlarim'
+      path: '/ilanlarim'
+      fullPath: '/ilanlarim'
+      preLoaderRoute: typeof AuthenticatedIlanlarimRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ilan-ver': {
+      id: '/_authenticated/ilan-ver'
+      path: '/ilan-ver'
+      fullPath: '/ilan-ver'
+      preLoaderRoute: typeof AuthenticatedIlanVerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/mesajlar/$id': {
+      id: '/_authenticated/mesajlar/$id'
+      path: '/$id'
+      fullPath: '/mesajlar/$id'
+      preLoaderRoute: typeof AuthenticatedMesajlarIdRouteImport
+      parentRoute: typeof AuthenticatedMesajlarRoute
+    }
   }
 }
 
+interface AuthenticatedMesajlarRouteChildren {
+  AuthenticatedMesajlarIdRoute: typeof AuthenticatedMesajlarIdRoute
+}
+
+const AuthenticatedMesajlarRouteChildren: AuthenticatedMesajlarRouteChildren = {
+  AuthenticatedMesajlarIdRoute: AuthenticatedMesajlarIdRoute,
+}
+
+const AuthenticatedMesajlarRouteWithChildren =
+  AuthenticatedMesajlarRoute._addFileChildren(
+    AuthenticatedMesajlarRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedIlanVerRoute: typeof AuthenticatedIlanVerRoute
+  AuthenticatedIlanlarimRoute: typeof AuthenticatedIlanlarimRoute
+  AuthenticatedMesajlarRoute: typeof AuthenticatedMesajlarRouteWithChildren
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedIlanVerRoute: AuthenticatedIlanVerRoute,
+  AuthenticatedIlanlarimRoute: AuthenticatedIlanlarimRoute,
+  AuthenticatedMesajlarRoute: AuthenticatedMesajlarRouteWithChildren,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
+  CerezPolitikasiRoute: CerezPolitikasiRoute,
+  GizlilikRoute: GizlilikRoute,
+  GuvenlikRoute: GuvenlikRoute,
+  HakkimizdaRoute: HakkimizdaRoute,
+  IletisimRoute: IletisimRoute,
+  KullanimKosullariRoute: KullanimKosullariRoute,
+  KvkkRoute: KvkkRoute,
+  NasilCalisirRoute: NasilCalisirRoute,
+  IlanIdRoute: IlanIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
