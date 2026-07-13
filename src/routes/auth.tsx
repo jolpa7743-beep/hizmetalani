@@ -33,8 +33,26 @@ function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"signin" | "signup">(search.mode ?? "signin");
-  const [loading, setLoading] = useState<null | "email" | "google">(null);
+  const [loading, setLoading] = useState<null | "email" | "google" | "seed">(null);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
+  const seed = useServerFn(seedDemoUsers);
+
+  const fillDemo = (kind: "demo" | "admin") => {
+    setTab("signin");
+    setForm({ email: `${kind}@${kind}.com`, password: kind, fullName: "" });
+  };
+
+  const runSeed = async () => {
+    setLoading("seed");
+    try {
+      await seed();
+      toast.success("Demo hesaplar hazır! demo/demo veya admin/admin ile giriş yapabilirsiniz.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Seed başarısız");
+    } finally {
+      setLoading(null);
+    }
+  };
 
   useEffect(() => {
     if (user) navigate({ to: search.redirect ?? "/" });
