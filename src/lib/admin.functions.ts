@@ -34,6 +34,13 @@ export const seedDemoUsers = createServerFn({ method: "POST" }).handler(async ()
       if (error) throw new Error(`${acc.email}: ${error.message}`);
       user = data.user;
       created = true;
+    } else {
+      // Reset password + confirm email to guarantee login works
+      const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+        password: acc.password,
+        email_confirm: true,
+      });
+      if (error) throw new Error(`${acc.email} reset: ${error.message}`);
     }
 
     if (!user) continue;
