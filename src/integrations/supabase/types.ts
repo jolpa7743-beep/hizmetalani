@@ -213,6 +213,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_listing_view: { Args: { _id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "user" | "admin"
