@@ -101,6 +101,11 @@ function NewListing() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const setField = <K extends string>(k: K, v: unknown) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors((e) => ({ ...e, [k]: undefined }));
+  };
   const [form, setForm] = useState({
     type: "offering" as ListingType,
     category: "",
