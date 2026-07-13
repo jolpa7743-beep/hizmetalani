@@ -56,44 +56,29 @@ export const seedDemoUsers = createServerFn({ method: "POST" }).handler(async ()
   return { ok: true, results };
 });
 
-/** List all users (admin only) */
+/** List all users (admin only). Uses SQL RPC to avoid the auth SDK
+ *  listUsers bug (`Scan error on column "confirmation_token"`). */
 export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    if (!isAdmin) throw new Error("Forbidden");
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: authList, error } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 500 });
-    if (error) throw error;
-
-    const ids = authList.users.map((u) => u.id);
-    const [{ data: profiles }, { data: roles }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("*").in("id", ids),
-      supabaseAdmin.from("user_roles").select("user_id, role").in("user_id", ids),
-    ]);
-
-    return authList.users.map((u) => {
-      const p = profiles?.find((x) => x.id === u.id);
-      const userRoles = roles?.filter((r) => r.user_id === u.id).map((r) => r.role) ?? [];
-      return {
-        id: u.id,
-        email: u.email ?? "",
-        created_at: u.created_at,
-        last_sign_in_at: u.last_sign_in_at ?? null,
-        email_confirmed_at: u.email_confirmed_at ?? null,
-        full_name: p?.full_name ?? null,
-        avatar_url: p?.avatar_url ?? null,
-        city: p?.city ?? null,
-        district: p?.district ?? null,
-        phone: p?.phone ?? null,
-        is_verified: p?.is_verified ?? false,
-        roles: userRoles,
-      };
-    });
+    const { data, error } = await context.supabase.rpc(
+      "admin_list_users" as never,
+    );
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{
+      id: string;
+      email: string;
+      created_at: string | null;
+      last_sign_in_at: string | null;
+      email_confirmed_at: string | null;
+      full_name: string | null;
+      avatar_url: string | null;
+      city: string | null;
+      district: string | null;
+      phone: string | null;
+      is_verified: boolean;
+      roles: string[];
+    }>;
   });
 
 /** Toggle admin role on a user */

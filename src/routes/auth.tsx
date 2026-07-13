@@ -12,7 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, Sparkles } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Sparkles, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { translateAuthError, validatePasswordLive, validateEmailLive } from "@/lib/auth-errors";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -25,8 +27,16 @@ export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Giriş Yap / Üye Ol — hizmetalanı.com" }] }),
 });
 
-const emailSchema = z.string().trim().email("Geçerli bir e-posta girin");
-const passwordSchema = z.string().min(6, "Şifre en az 6 karakter olmalı").max(72);
+function getPasswordStrength(pw: string): { score: 0 | 1 | 2 | 3; label: string; color: string } {
+  if (!pw) return { score: 0, label: "", color: "" };
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw)) score++;
+  const labels = ["Çok zayıf", "Zayıf", "Orta", "Güçlü"] as const;
+  const colors = ["bg-destructive", "bg-amber-500", "bg-yellow-500", "bg-emerald-500"];
+  return { score: score as 0 | 1 | 2 | 3, label: labels[score], color: colors[score] };
+}
 
 function AuthPage() {
   const { user } = useAuth();
@@ -35,21 +45,32 @@ function AuthPage() {
   const [tab, setTab] = useState<"signin" | "signup">(search.mode ?? "signin");
   const [loading, setLoading] = useState<null | "email" | "google" | "seed">(null);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const seed = useServerFn(seedDemoUsers);
+
+  // Live validation
+  const emailError = validateEmailLive(form.email);
+  const passwordError = validatePasswordLive(form.password);
+  const passwordStrength = getPasswordStrength(form.password);
 
   const fillDemo = (kind: "demo" | "admin") => {
     setTab("signin");
+    setSubmitError(null);
     const password = kind === "demo" ? "demo1234" : "admin123";
     setForm({ email: `${kind}@${kind}.com`, password, fullName: "" });
   };
 
   const runSeed = async () => {
     setLoading("seed");
+    setSubmitError(null);
     try {
       await seed();
       toast.success("Demo hesaplar hazır! demo@demo.com/demo1234 veya admin@admin.com/admin123");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Seed başarısız");
+      const msg = translateAuthError(e);
+      toast.error(msg);
+      setSubmitError(msg);
     } finally {
       setLoading(null);
     }
@@ -61,17 +82,24 @@ function AuthPage() {
 
   const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const email = emailSchema.safeParse(form.email);
-    const password = passwordSchema.safeParse(form.password);
-    if (!email.success) return toast.error(email.error.issues[0].message);
-    if (!password.success) return toast.error(password.error.issues[0].message);
+    setSubmitError(null);
+
+    // Client-side validation
+    if (emailError || !form.email) {
+      setSubmitError(emailError ?? "E-posta adresinizi girin");
+      return;
+    }
+    if (passwordError || !form.password) {
+      setSubmitError(passwordError ?? "Şifrenizi girin");
+      return;
+    }
 
     setLoading("email");
     try {
       if (tab === "signup") {
         const { error } = await supabase.auth.signUp({
-          email: email.data,
-          password: password.data,
+          email: form.email.trim(),
+          password: form.password,
           options: {
             emailRedirectTo: window.location.origin,
             data: { full_name: form.fullName.trim() || null },
@@ -81,14 +109,16 @@ function AuthPage() {
         toast.success("Kayıt başarılı! E-postanızı doğrulamayı unutmayın.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: email.data,
-          password: password.data,
+          email: form.email.trim(),
+          password: form.password,
         });
         if (error) throw error;
         toast.success("Hoş geldiniz!");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Bir hata oluştu");
+      const msg = translateAuthError(err);
+      setSubmitError(msg);
+      toast.error(msg);
     } finally {
       setLoading(null);
     }
@@ -96,16 +126,18 @@ function AuthPage() {
 
   const onGoogle = async () => {
     setLoading("google");
+    setSubmitError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      toast.error("Google ile giriş başarısız oldu");
+      const msg = translateAuthError(result.error);
+      toast.error(msg);
+      setSubmitError(msg);
       setLoading(null);
       return;
     }
     if (!result.redirected) {
-      // Session set in-place (popup flow)
       toast.success("Giriş başarılı!");
     }
   };
@@ -174,25 +206,83 @@ function AuthPage() {
                     type="email"
                     autoComplete="email"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) => { setForm({ ...form, email: e.target.value }); setSubmitError(null); }}
                     placeholder="ornek@eposta.com"
                     required
+                    aria-invalid={!!emailError}
+                    aria-describedby={emailError ? "email-error" : undefined}
+                    className={emailError ? "border-destructive focus-visible:ring-destructive/40" : ""}
                   />
+                  {emailError && (
+                    <p id="email-error" className="mt-1 text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="size-3" /> {emailError}
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="password">Şifre</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    autoComplete={tab === "signup" ? "new-password" : "current-password"}
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder="En az 6 karakter"
-                    required
-                    minLength={6}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Şifre</Label>
+                    {tab === "signup" && form.password && !passwordError && (
+                      <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                        <CheckCircle2 className="size-3 text-emerald-600" /> {passwordStrength.label}
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete={tab === "signup" ? "new-password" : "current-password"}
+                      value={form.password}
+                      onChange={(e) => { setForm({ ...form, password: e.target.value }); setSubmitError(null); }}
+                      placeholder="En az 6 karakter"
+                      required
+                      minLength={6}
+                      maxLength={72}
+                      aria-invalid={!!passwordError}
+                      aria-describedby={passwordError ? "password-error" : undefined}
+                      className={`pr-10 ${passwordError ? "border-destructive focus-visible:ring-destructive/40" : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-muted-foreground hover:text-foreground rounded"
+                      aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  {passwordError ? (
+                    <p id="password-error" className="mt-1 text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="size-3" /> {passwordError}
+                    </p>
+                  ) : tab === "signup" && form.password ? (
+                    <div className="mt-1.5 flex gap-1" aria-hidden>
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-colors ${
+                            i < passwordStrength.score ? passwordStrength.color : "bg-muted"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
-                <Button type="submit" disabled={loading !== null} className="w-full h-11 bg-brand hover:bg-brand/90">
+
+                {submitError && (
+                  <Alert variant="destructive" className="py-2">
+                    <AlertCircle className="size-4" />
+                    <AlertDescription className="text-sm">{submitError}</AlertDescription>
+                  </Alert>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={loading !== null || !!emailError || !!passwordError || !form.email || !form.password}
+                  className="w-full h-11 bg-brand hover:bg-brand/90"
+                >
                   {loading === "email" && <Loader2 className="size-4 mr-2 animate-spin" />}
                   {tab === "signup" ? "Ücretsiz Üye Ol" : "Giriş Yap"}
                 </Button>

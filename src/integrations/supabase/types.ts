@@ -206,6 +206,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
