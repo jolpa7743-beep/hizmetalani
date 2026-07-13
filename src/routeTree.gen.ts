@@ -25,7 +25,11 @@ import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedMesajlarRouteImport } from './routes/_authenticated.mesajlar'
 import { Route as AuthenticatedIlanlarimRouteImport } from './routes/_authenticated.ilanlarim'
 import { Route as AuthenticatedIlanVerRouteImport } from './routes/_authenticated.ilan-ver'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
 import { Route as AuthenticatedMesajlarIdRouteImport } from './routes/_authenticated.mesajlar.$id'
+import { Route as AuthenticatedAdminKullanicilarRouteImport } from './routes/_authenticated.admin.kullanicilar'
+import { Route as AuthenticatedAdminIlanlarRouteImport } from './routes/_authenticated.admin.ilanlar'
 
 const NasilCalisirRoute = NasilCalisirRouteImport.update({
   id: '/nasil-calisir',
@@ -106,11 +110,33 @@ const AuthenticatedIlanVerRoute = AuthenticatedIlanVerRouteImport.update({
   path: '/ilan-ver',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedMesajlarIdRoute = AuthenticatedMesajlarIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AuthenticatedMesajlarRoute,
 } as any)
+const AuthenticatedAdminKullanicilarRoute =
+  AuthenticatedAdminKullanicilarRouteImport.update({
+    id: '/kullanicilar',
+    path: '/kullanicilar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminIlanlarRoute =
+  AuthenticatedAdminIlanlarRouteImport.update({
+    id: '/ilanlar',
+    path: '/ilanlar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,12 +149,16 @@ export interface FileRoutesByFullPath {
   '/kullanim-kosullari': typeof KullanimKosullariRoute
   '/kvkk': typeof KvkkRoute
   '/nasil-calisir': typeof NasilCalisirRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
+  '/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
+  '/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
   '/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -146,7 +176,10 @@ export interface FileRoutesByTo {
   '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
+  '/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
+  '/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
   '/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,12 +194,16 @@ export interface FileRoutesById {
   '/kullanim-kosullari': typeof KullanimKosullariRoute
   '/kvkk': typeof KvkkRoute
   '/nasil-calisir': typeof NasilCalisirRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/_authenticated/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/_authenticated/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
+  '/_authenticated/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
+  '/_authenticated/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
   '/_authenticated/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,12 +218,16 @@ export interface FileRouteTypes {
     | '/kullanim-kosullari'
     | '/kvkk'
     | '/nasil-calisir'
+    | '/admin'
     | '/ilan-ver'
     | '/ilanlarim'
     | '/mesajlar'
     | '/profil'
     | '/ilan/$id'
+    | '/admin/ilanlar'
+    | '/admin/kullanicilar'
     | '/mesajlar/$id'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -204,7 +245,10 @@ export interface FileRouteTypes {
     | '/mesajlar'
     | '/profil'
     | '/ilan/$id'
+    | '/admin/ilanlar'
+    | '/admin/kullanicilar'
     | '/mesajlar/$id'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -218,12 +262,16 @@ export interface FileRouteTypes {
     | '/kullanim-kosullari'
     | '/kvkk'
     | '/nasil-calisir'
+    | '/_authenticated/admin'
     | '/_authenticated/ilan-ver'
     | '/_authenticated/ilanlarim'
     | '/_authenticated/mesajlar'
     | '/_authenticated/profil'
     | '/ilan/$id'
+    | '/_authenticated/admin/ilanlar'
+    | '/_authenticated/admin/kullanicilar'
     | '/_authenticated/mesajlar/$id'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -355,6 +403,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIlanVerRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/mesajlar/$id': {
       id: '/_authenticated/mesajlar/$id'
       path: '/$id'
@@ -362,8 +424,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMesajlarIdRouteImport
       parentRoute: typeof AuthenticatedMesajlarRoute
     }
+    '/_authenticated/admin/kullanicilar': {
+      id: '/_authenticated/admin/kullanicilar'
+      path: '/kullanicilar'
+      fullPath: '/admin/kullanicilar'
+      preLoaderRoute: typeof AuthenticatedAdminKullanicilarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/ilanlar': {
+      id: '/_authenticated/admin/ilanlar'
+      path: '/ilanlar'
+      fullPath: '/admin/ilanlar'
+      preLoaderRoute: typeof AuthenticatedAdminIlanlarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIlanlarRoute: typeof AuthenticatedAdminIlanlarRoute
+  AuthenticatedAdminKullanicilarRoute: typeof AuthenticatedAdminKullanicilarRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIlanlarRoute: AuthenticatedAdminIlanlarRoute,
+  AuthenticatedAdminKullanicilarRoute: AuthenticatedAdminKullanicilarRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedMesajlarRouteChildren {
   AuthenticatedMesajlarIdRoute: typeof AuthenticatedMesajlarIdRoute
@@ -379,6 +470,7 @@ const AuthenticatedMesajlarRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedIlanVerRoute: typeof AuthenticatedIlanVerRoute
   AuthenticatedIlanlarimRoute: typeof AuthenticatedIlanlarimRoute
   AuthenticatedMesajlarRoute: typeof AuthenticatedMesajlarRouteWithChildren
@@ -386,6 +478,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedIlanVerRoute: AuthenticatedIlanVerRoute,
   AuthenticatedIlanlarimRoute: AuthenticatedIlanlarimRoute,
   AuthenticatedMesajlarRoute: AuthenticatedMesajlarRouteWithChildren,

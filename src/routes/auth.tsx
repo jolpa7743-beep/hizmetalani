@@ -1,16 +1,18 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
+import { seedDemoUsers } from "@/lib/admin.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -31,8 +33,26 @@ function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"signin" | "signup">(search.mode ?? "signin");
-  const [loading, setLoading] = useState<null | "email" | "google">(null);
+  const [loading, setLoading] = useState<null | "email" | "google" | "seed">(null);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
+  const seed = useServerFn(seedDemoUsers);
+
+  const fillDemo = (kind: "demo" | "admin") => {
+    setTab("signin");
+    setForm({ email: `${kind}@${kind}.com`, password: kind, fullName: "" });
+  };
+
+  const runSeed = async () => {
+    setLoading("seed");
+    try {
+      await seed();
+      toast.success("Demo hesaplar hazır! demo/demo veya admin/admin ile giriş yapabilirsiniz.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Seed başarısız");
+    } finally {
+      setLoading(null);
+    }
+  };
 
   useEffect(() => {
     if (user) navigate({ to: search.redirect ?? "/" });
@@ -176,6 +196,32 @@ function AuthPage() {
                   {tab === "signup" ? "Ücretsiz Üye Ol" : "Giriş Yap"}
                 </Button>
               </form>
+
+              <div className="rounded-lg border border-dashed border-brand/40 bg-brand/5 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-medium text-brand">
+                  <Sparkles className="size-3.5" /> Demo Hesaplar
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Test için hazır hesaplar. İlk kez kullanıyorsanız "Oluştur" ile hesapları hazırlayın.
+                </p>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => fillDemo("demo")}>
+                    demo/demo
+                  </Button>
+                  <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => fillDemo("admin")}>
+                    admin/admin
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 text-xs bg-brand hover:bg-brand/90"
+                    onClick={runSeed}
+                    disabled={loading !== null}
+                  >
+                    {loading === "seed" ? <Loader2 className="size-3 animate-spin" /> : "Oluştur"}
+                  </Button>
+                </div>
+              </div>
 
               <p className="text-xs text-muted-foreground text-center">
                 Devam ederek{" "}

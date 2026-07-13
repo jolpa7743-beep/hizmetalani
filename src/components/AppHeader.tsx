@@ -1,9 +1,10 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LogOut, MessageSquare, Plus, User as UserIcon, Menu, X, LayoutList } from "lucide-react";
+import { LogOut, MessageSquare, Plus, User as UserIcon, Menu, X, LayoutList, Shield } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -17,6 +18,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function AppHeader() {
   const { user, loading } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -98,6 +100,14 @@ export function AppHeader() {
                   <DropdownMenuItem onClick={() => navigate({ to: "/mesajlar" })}>
                     <MessageSquare className="size-4 mr-2" aria-hidden /> Mesajlarım
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                        <Shield className="size-4 mr-2 text-brand" aria-hidden /> Yönetici Paneli
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive">
                     <LogOut className="size-4 mr-2" aria-hidden /> Çıkış Yap
