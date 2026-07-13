@@ -336,7 +336,7 @@ function ListingDetail() {
                     {listing.benefits.map((r, i) => <li key={i}>{r}</li>)}
                   </ul>
                 ) : (
-                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                  <p className="text-sm text-muted-foreground italic">{EMPTY.benefits}</p>
                 )}
               </div>
             </div>
