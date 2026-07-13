@@ -12,7 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, Sparkles } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Sparkles, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { translateAuthError, validatePasswordLive, validateEmailLive } from "@/lib/auth-errors";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -35,21 +37,32 @@ function AuthPage() {
   const [tab, setTab] = useState<"signin" | "signup">(search.mode ?? "signin");
   const [loading, setLoading] = useState<null | "email" | "google" | "seed">(null);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const seed = useServerFn(seedDemoUsers);
+
+  // Live validation
+  const emailError = validateEmailLive(form.email);
+  const passwordError = validatePasswordLive(form.password);
+  const passwordStrength = getPasswordStrength(form.password);
 
   const fillDemo = (kind: "demo" | "admin") => {
     setTab("signin");
+    setSubmitError(null);
     const password = kind === "demo" ? "demo1234" : "admin123";
     setForm({ email: `${kind}@${kind}.com`, password, fullName: "" });
   };
 
   const runSeed = async () => {
     setLoading("seed");
+    setSubmitError(null);
     try {
       await seed();
       toast.success("Demo hesaplar hazır! demo@demo.com/demo1234 veya admin@admin.com/admin123");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Seed başarısız");
+      const msg = translateAuthError(e);
+      toast.error(msg);
+      setSubmitError(msg);
     } finally {
       setLoading(null);
     }
@@ -61,17 +74,24 @@ function AuthPage() {
 
   const onEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const email = emailSchema.safeParse(form.email);
-    const password = passwordSchema.safeParse(form.password);
-    if (!email.success) return toast.error(email.error.issues[0].message);
-    if (!password.success) return toast.error(password.error.issues[0].message);
+    setSubmitError(null);
+
+    // Client-side validation
+    if (emailError || !form.email) {
+      setSubmitError(emailError ?? "E-posta adresinizi girin");
+      return;
+    }
+    if (passwordError || !form.password) {
+      setSubmitError(passwordError ?? "Şifrenizi girin");
+      return;
+    }
 
     setLoading("email");
     try {
       if (tab === "signup") {
         const { error } = await supabase.auth.signUp({
-          email: email.data,
-          password: password.data,
+          email: form.email.trim(),
+          password: form.password,
           options: {
             emailRedirectTo: window.location.origin,
             data: { full_name: form.fullName.trim() || null },
@@ -81,14 +101,16 @@ function AuthPage() {
         toast.success("Kayıt başarılı! E-postanızı doğrulamayı unutmayın.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: email.data,
-          password: password.data,
+          email: form.email.trim(),
+          password: form.password,
         });
         if (error) throw error;
         toast.success("Hoş geldiniz!");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Bir hata oluştu");
+      const msg = translateAuthError(err);
+      setSubmitError(msg);
+      toast.error(msg);
     } finally {
       setLoading(null);
     }
