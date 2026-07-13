@@ -263,42 +263,58 @@ function NewListing() {
               </RadioGroup>
             </div>
 
-            <div>
+            <div data-field="category">
               <Label htmlFor="category">Kategori *</Label>
-              <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                <SelectTrigger><SelectValue placeholder="Kategori seçin" /></SelectTrigger>
+              <Select value={form.category} onValueChange={(v) => setField("category", v)}>
+                <SelectTrigger className={errors.category ? "border-destructive" : ""}>
+                  <SelectValue placeholder="Kategori seçin" />
+                </SelectTrigger>
                 <SelectContent>
                   {availableCategories.map((c) => (
                     <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <FieldError msg={errors.category} />
             </div>
 
-            <div>
+            <div data-field="title">
               <Label htmlFor="title">Başlık *</Label>
               <Input id="title" value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="ör. Kadıköy'de deneyimli çocuk bakıcısı" maxLength={120} />
-              <div className="mt-1 text-xs text-muted-foreground text-right">{form.title.length}/120</div>
+                onChange={(e) => setField("title", e.target.value)}
+                placeholder="ör. Kadıköy'de deneyimli çocuk bakıcısı" maxLength={120}
+                className={errors.title ? "border-destructive" : ""}
+                aria-invalid={!!errors.title} />
+              <div className="mt-1 flex justify-between text-xs">
+                <FieldError msg={errors.title} />
+                <span className="text-muted-foreground ml-auto">{form.title.length}/120</span>
+              </div>
             </div>
 
-            <div>
+            <div data-field="description">
               <Label htmlFor="description">Açıklama *</Label>
               <Textarea id="description" value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Deneyiminiz, çalışma günleriniz, beklentileriniz vb." rows={6} maxLength={5000} />
-              <div className="mt-1 text-xs text-muted-foreground text-right">{form.description.length}/5000</div>
+                onChange={(e) => setField("description", e.target.value)}
+                placeholder="Deneyiminiz, çalışma günleriniz, beklentileriniz vb." rows={6} maxLength={5000}
+                className={errors.description ? "border-destructive" : ""}
+                aria-invalid={!!errors.description} />
+              <div className="mt-1 flex justify-between text-xs">
+                <FieldError msg={errors.description} />
+                <span className="text-muted-foreground ml-auto">{form.description.length}/5000</span>
+              </div>
             </div>
 
-            <IlIlceSelect
-              il={form.city}
-              ilce={form.district}
-              onIlChange={(v) => setForm({ ...form, city: v })}
-              onIlceChange={(v) => setForm({ ...form, district: v })}
-              ilLabel="İl *"
-              required
-            />
+            <div data-field="city">
+              <IlIlceSelect
+                il={form.city}
+                ilce={form.district}
+                onIlChange={(v) => setField("city", v)}
+                onIlceChange={(v) => setField("district", v)}
+                ilLabel="İl *"
+                required
+              />
+              <FieldError msg={errors.city} />
+            </div>
 
             {/* Çalışma Tipi + Uzaktan / Acil */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
