@@ -401,5 +401,3 @@ function NewListing() {
   );
 }
 
-// Unused import silencer
-void Checkbox;
