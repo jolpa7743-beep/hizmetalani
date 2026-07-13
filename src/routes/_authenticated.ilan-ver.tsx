@@ -172,7 +172,21 @@ function NewListing() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse(form);
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    if (!parsed.success) {
+      const fe: FieldErrors = {};
+      for (const iss of parsed.error.issues) {
+        const key = String(iss.path[0] ?? "form");
+        if (!fe[key]) fe[key] = iss.message;
+      }
+      setErrors(fe);
+      toast.error("Lütfen zorunlu alanları doldurun");
+      // ilk hatalı alana kaydır
+      const firstKey = Object.keys(fe)[0];
+      const el = document.querySelector<HTMLElement>(`[data-field="${firstKey}"]`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    setErrors({});
     if (!user) return;
 
     setSaving(true);
