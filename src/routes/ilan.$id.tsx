@@ -87,7 +87,18 @@ const SALARY_PERIOD_LABEL: Record<string, string> = {
   job: "iş başı",
 };
 const DAYS_ORDER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
-const NEG = "Detaylar konuşulur";
+// Alan bazlı "belirtilmemiş" mesajları — kullanıcı ne eksik olduğunu net görsün
+const EMPTY = {
+  work_type: "Çalışma tipi belirtilmemiş — görüşmeye açık",
+  salary: "Maaş belirtilmemiş — pazarlığa açık",
+  hours: "Çalışma saatleri belirtilmemiş — esnek",
+  experience: "Deneyim şartı belirtilmemiş — fark etmez",
+  education: "Eğitim şartı belirtilmemiş — fark etmez",
+  remote: "Uzaktan/acil bilgisi belirtilmemiş",
+  days: "Çalışma / izin günleri belirtilmemiş — esnek",
+  requirements: "Özel bir şart belirtilmemiş — görüşmeye açık",
+  benefits: "Yan hak belirtilmemiş — görüşmeye açık",
+} as const;
 
 function ListingDetail() {
   const { id } = Route.useParams();
