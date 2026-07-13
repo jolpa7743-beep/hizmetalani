@@ -143,7 +143,7 @@ function HomePage() {
               <SelectTrigger className="h-11 bg-surface" aria-label="Şehir"><SelectValue placeholder="Şehir" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tüm Şehirler</SelectItem>
-                {TR_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                {ILLER.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
             <Button type="submit" className="h-11 bg-brand hover:bg-brand/90 shadow-sm">
@@ -284,7 +284,7 @@ function FilterPanel({
             <SelectTrigger className="h-10 mt-1.5 bg-surface"><SelectValue placeholder="Tüm İller" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tüm İller</SelectItem>
-              {TR_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {ILLER.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
