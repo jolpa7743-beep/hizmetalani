@@ -150,6 +150,7 @@ function NewListing() {
         price_type: parsed.data.price_type,
         work_type: form.work_type || null,
         available_days: form.available_days.length ? form.available_days : null,
+        off_days: form.off_days.length ? form.off_days : null,
         available_hours: hours,
         salary_min: salaryMin,
         salary_max: salaryMax,
