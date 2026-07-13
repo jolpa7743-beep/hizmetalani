@@ -17,16 +17,60 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, X, Plus } from "lucide-react";
 
-const schema = z.object({
-  type: z.enum(["offering", "seeking"]),
-  category: z.string().min(1, "Kategori seçin"),
-  title: z.string().trim().min(3, "Başlık en az 3 karakter").max(120),
-  description: z.string().trim().min(10, "Açıklama en az 10 karakter").max(5000),
-  city: z.string().trim().min(1, "İl seçin"),
-  district: z.string().trim().max(60).optional(),
-  price: z.string().optional(),
-  price_type: z.enum(["hourly", "daily", "monthly", "job", "negotiable"]),
-});
+const schema = z
+  .object({
+    type: z.enum(["offering", "seeking"], { errorMap: () => ({ message: "İlan tipini seçin" }) }),
+    category: z.string().min(1, "Kategori seçin"),
+    title: z
+      .string()
+      .trim()
+      .min(3, "Başlık en az 3 karakter olmalı")
+      .max(120, "Başlık en fazla 120 karakter olabilir"),
+    description: z
+      .string()
+      .trim()
+      .min(10, "Açıklama en az 10 karakter olmalı")
+      .max(5000, "Açıklama en fazla 5000 karakter olabilir"),
+    city: z.string().trim().min(1, "İl seçin"),
+    district: z.string().trim().max(60).optional().or(z.literal("")),
+    price: z
+      .string()
+      .optional()
+      .refine((v) => !v || /^\d+(\.\d+)?$/.test(v), "Ücret sadece rakam olmalı"),
+    price_type: z.enum(["hourly", "daily", "monthly", "job", "negotiable"]),
+    salary_min: z
+      .string()
+      .optional()
+      .refine((v) => !v || /^\d+$/.test(v), "Maaş sadece rakam olmalı"),
+    salary_max: z
+      .string()
+      .optional()
+      .refine((v) => !v || /^\d+$/.test(v), "Maaş sadece rakam olmalı"),
+    experience_years: z
+      .string()
+      .optional()
+      .refine((v) => !v || (/^\d+$/.test(v) && +v <= 60), "0-60 yıl arası olmalı"),
+    hours_start: z.string().optional(),
+    hours_end: z.string().optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (v.salary_min && v.salary_max && Number(v.salary_max) < Number(v.salary_min)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["salary_max"],
+        message: "Maks. maaş, min. maaştan küçük olamaz",
+      });
+    }
+    if (v.hours_start && v.hours_end && v.hours_end <= v.hours_start) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["hours_end"],
+        message: "Bitiş saati başlangıçtan sonra olmalı",
+      });
+    }
+  });
+
+type FieldErrors = Partial<Record<string, string>>;
 
 export const Route = createFileRoute("/_authenticated/ilan-ver")({
   component: NewListing,
