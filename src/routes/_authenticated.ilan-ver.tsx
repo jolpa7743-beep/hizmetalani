@@ -371,27 +371,37 @@ function NewListing() {
 
             {/* Saatler */}
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div data-field="hours_start">
                 <Label htmlFor="hs">Saat (Başlangıç)</Label>
-                <Input id="hs" type="time" value={form.hours_start} onChange={(e) => setForm({ ...form, hours_start: e.target.value })} />
+                <Input id="hs" type="time" value={form.hours_start}
+                  onChange={(e) => setField("hours_start", e.target.value)}
+                  className={errors.hours_start ? "border-destructive" : ""} />
+                <FieldError msg={errors.hours_start} />
               </div>
-              <div>
+              <div data-field="hours_end">
                 <Label htmlFor="he">Saat (Bitiş)</Label>
-                <Input id="he" type="time" value={form.hours_end} onChange={(e) => setForm({ ...form, hours_end: e.target.value })} />
+                <Input id="he" type="time" value={form.hours_end}
+                  onChange={(e) => setField("hours_end", e.target.value)}
+                  className={errors.hours_end ? "border-destructive" : ""} />
+                <FieldError msg={errors.hours_end} />
               </div>
             </div>
 
             {/* Maaş aralığı */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
+              <div data-field="salary_min">
                 <Label>Maaş Min (₺)</Label>
                 <Input type="number" min={0} value={form.salary_min}
-                  onChange={(e) => setForm({ ...form, salary_min: e.target.value })} placeholder="ör. 15000" />
+                  onChange={(e) => setField("salary_min", e.target.value)} placeholder="ör. 15000"
+                  className={errors.salary_min ? "border-destructive" : ""} />
+                <FieldError msg={errors.salary_min} />
               </div>
-              <div>
+              <div data-field="salary_max">
                 <Label>Maaş Max (₺)</Label>
                 <Input type="number" min={0} value={form.salary_max}
-                  onChange={(e) => setForm({ ...form, salary_max: e.target.value })} placeholder="ör. 25000" />
+                  onChange={(e) => setField("salary_max", e.target.value)} placeholder="ör. 25000"
+                  className={errors.salary_max ? "border-destructive" : ""} />
+                <FieldError msg={errors.salary_max} />
               </div>
               <div>
                 <Label>Maaş Periyodu</Label>
@@ -409,10 +419,12 @@ function NewListing() {
 
             {/* Deneyim + Eğitim */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div data-field="experience_years">
                 <Label>Deneyim (Yıl)</Label>
                 <Input type="number" min={0} max={60} value={form.experience_years}
-                  onChange={(e) => setForm({ ...form, experience_years: e.target.value })} placeholder="ör. 3" />
+                  onChange={(e) => setField("experience_years", e.target.value)} placeholder="ör. 3"
+                  className={errors.experience_years ? "border-destructive" : ""} />
+                <FieldError msg={errors.experience_years} />
               </div>
               <div>
                 <Label>Eğitim Seviyesi</Label>
