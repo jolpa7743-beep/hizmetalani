@@ -20,11 +20,111 @@ import {
 import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Building2, User as UserIcon, ShieldAlert, Search } from "lucide-react";
 import { toast } from "sonner";
 
+// Loader ile ilan verisini önden çekip head() içinde title/description/OG üretiyoruz.
+const listingQueryOptions = (id: string) => ({
+  queryKey: ["listing", id],
+  queryFn: async () => {
+    const { data: listing, error } = await supabase
+      .from("listings")
+      .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count,work_type,available_days,off_days,available_hours,salary_min,salary_max,salary_period,experience_years,education_level,requirements,benefits,is_remote,is_urgent")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw error;
+    if (!listing) return null;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name,avatar_url,is_verified,city,district")
+      .eq("id", listing.user_id)
+      .maybeSingle();
+    return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
+  },
+});
+
+function truncate(s: string, n: number) {
+  const clean = s.replace(/\s+/g, " ").trim();
+  return clean.length > n ? clean.slice(0, n - 1).trimEnd() + "…" : clean;
+}
+
 export const Route = createFileRoute("/ilan/$id")({
   component: ListingDetail,
-  head: ({ params }) => ({
-    meta: [{ title: `İlan #${params.id.slice(0, 8)} — hizmetalanı.com` }],
-  }),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(listingQueryOptions(params.id)),
+  head: ({ params, loaderData }) => {
+    const l = loaderData?.listing;
+    const p = loaderData?.profile;
+    if (!l) {
+      return {
+        meta: [
+          { title: "İlan bulunamadı — hizmetalanı.com" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
+    }
+    const loc = `${l.city}${l.district ? " / " + l.district : ""}`;
+    const catLabel = CATEGORY_MAP[l.category]?.label ?? "";
+    const typeLabel = TYPE_LABEL[l.type];
+    const priceStr = formatPrice(l.price, l.price_type);
+    const title = truncate(`${l.title} — ${loc} | ${catLabel} | hizmetalanı.com`, 65);
+    const description = truncate(
+      `${typeLabel} · ${catLabel} · ${loc}${priceStr ? " · " + priceStr : ""} — ${l.description}`,
+      160,
+    );
+    const ogTitle = truncate(`${l.title} — ${loc}`, 65);
+    const path = `/ilan/${params.id}`;
+    // JSON-LD (JobPosting) — Google Jobs uyumu
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "JobPosting",
+      title: l.title,
+      description: l.description,
+      datePosted: l.created_at,
+      employmentType: l.work_type ?? undefined,
+      jobLocationType: l.is_remote ? "TELECOMMUTE" : undefined,
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: l.district ?? undefined,
+          addressRegion: l.city,
+          addressCountry: "TR",
+        },
+      },
+      hiringOrganization: {
+        "@type": "Organization",
+        name: p?.full_name ?? "hizmetalanı.com kullanıcısı",
+      },
+      baseSalary:
+        l.salary_min || l.salary_max
+          ? {
+              "@type": "MonetaryAmount",
+              currency: "TRY",
+              value: {
+                "@type": "QuantitativeValue",
+                minValue: l.salary_min ?? undefined,
+                maxValue: l.salary_max ?? undefined,
+                unitText: (l.salary_period ?? "MONTH").toUpperCase(),
+              },
+            }
+          : undefined,
+    };
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: ogTitle },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: path },
+        { property: "og:site_name", content: "hizmetalanı.com" },
+        { property: "og:locale", content: "tr_TR" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: ogTitle },
+        { name: "twitter:description", content: description },
+        { name: "keywords", content: `${l.title}, ${catLabel}, ${l.city}, ${l.district ?? ""}, ${typeLabel}, ilan, iş`.replace(/, ,/g, ",") },
+      ],
+      links: [{ rel: "canonical", href: path }],
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
+    };
+  },
 });
 
 type Listing = {
