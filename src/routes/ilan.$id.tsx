@@ -1,13 +1,23 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { CATEGORY_MAP, TYPE_LABEL, formatPrice, type CategoryKey, type ListingType } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Building2, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/ilan/$id")({
@@ -30,47 +40,61 @@ type Listing = {
   price_type: string;
   created_at: string;
   view_count: number;
-  profiles: { full_name: string | null; avatar_url: string | null; is_verified: boolean; city: string | null } | null;
+};
+
+type Profile = {
+  full_name: string | null;
+  avatar_url: string | null;
+  is_verified: boolean;
+  city: string | null;
+  district: string | null;
 };
 
 function ListingDetail() {
   const { id } = Route.useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [authDialog, setAuthDialog] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["listing", id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: listing, error } = await supabase
         .from("listings")
-        .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count, profiles(full_name,avatar_url,is_verified,city)")
+        .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
-      return data as unknown as Listing | null;
+      if (!listing) return null;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name,avatar_url,is_verified,city,district")
+        .eq("id", listing.user_id)
+        .maybeSingle();
+      return { listing: listing as Listing, profile: (profile ?? null) as Profile | null };
     },
   });
 
-  // Görüntülenme sayısını artır (popülerliğe göre sıralama için)
   useEffect(() => {
     supabase.rpc("increment_listing_view", { _id: id }).then(() => {});
   }, [id]);
 
   const contactSeller = async () => {
     if (!user) {
-      navigate({ to: "/auth", search: { redirect: `/ilan/${id}` } });
+      setAuthDialog(true);
       return;
     }
-    if (!data) return;
-    if (data.user_id === user.id) {
+    if (!data?.listing) return;
+    const listing = data.listing;
+    if (listing.user_id === user.id) {
       toast.error("Kendi ilanınıza mesaj gönderemezsiniz");
       return;
     }
-    const [u1, u2] = [user.id, data.user_id].sort();
+    const [u1, u2] = [user.id, listing.user_id].sort();
     const { data: existing } = await supabase
       .from("conversations")
       .select("id")
-      .eq("listing_id", data.id)
+      .eq("listing_id", listing.id)
       .eq("user1_id", u1)
       .eq("user2_id", u2)
       .maybeSingle();
@@ -79,7 +103,7 @@ function ListingDetail() {
     if (!convId) {
       const { data: created, error: cErr } = await supabase
         .from("conversations")
-        .insert({ listing_id: data.id, user1_id: u1, user2_id: u2 })
+        .insert({ listing_id: listing.id, user1_id: u1, user2_id: u2 })
         .select("id")
         .single();
       if (cErr) {
@@ -92,7 +116,7 @@ function ListingDetail() {
   };
 
   if (isLoading) return <div className="mx-auto max-w-4xl px-4 py-10">Yükleniyor...</div>;
-  if (error || !data)
+  if (error || !data || !data.listing)
     return (
       <div className="mx-auto max-w-4xl px-4 py-10 text-center">
         <p className="text-lg font-medium">İlan bulunamadı</p>
@@ -100,11 +124,14 @@ function ListingDetail() {
       </div>
     );
 
-  const cat = CATEGORY_MAP[data.category];
-  const isOwner = user?.id === data.user_id;
+  const listing = data.listing;
+  const profile = data.profile;
+  const cat = CATEGORY_MAP[listing.category];
+  const isOwner = user?.id === listing.user_id;
+  const isOffering = listing.type === "offering";
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
+    <div className="mx-auto max-w-5xl px-4 py-6">
       <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand mb-4">
         <ArrowLeft className="size-4" /> İlanlara dön
       </Link>
@@ -117,27 +144,53 @@ function ListingDetail() {
             </div>
             <div className="p-6">
               <div className="flex flex-wrap items-center gap-2 mb-3">
-                <Badge className="bg-brand text-brand-foreground">{TYPE_LABEL[data.type]}</Badge>
-                <Badge variant="secondary">{cat?.label}</Badge>
+                <Badge className={isOffering ? "bg-brand text-brand-foreground" : "bg-brand-accent text-brand-foreground"}>
+                  {isOffering ? <Building2 className="size-3 mr-1" /> : <UserIcon className="size-3 mr-1" />}
+                  {TYPE_LABEL[listing.type]}
+                </Badge>
+                <Badge variant="secondary">
+                  <Tag className="size-3 mr-1" /> {cat?.label}
+                </Badge>
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold">{data.title}</h1>
-              <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <h1 className="text-2xl md:text-3xl font-bold">{listing.title}</h1>
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-1">
-                  <MapPin className="size-4" /> {data.city}{data.district ? ` / ${data.district}` : ""}
+                  <MapPin className="size-4" /> {listing.city}
+                  {listing.district ? ` / ${listing.district}` : ""}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Clock className="size-4" /> {new Date(data.created_at).toLocaleDateString("tr-TR")}
+                  <Clock className="size-4" /> {new Date(listing.created_at).toLocaleDateString("tr-TR")}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Eye className="size-4" /> {data.view_count} görüntülenme
+                  <Eye className="size-4" /> {listing.view_count} görüntülenme
                 </span>
               </div>
               <div className="mt-4 text-3xl font-bold text-brand">
-                {formatPrice(data.price, data.price_type)}
+                {formatPrice(listing.price, listing.price_type)}
               </div>
+
+              <div className="mt-6 grid sm:grid-cols-2 gap-3">
+                <div className="rounded-lg border border-border bg-background/50 p-3">
+                  <div className="text-xs text-muted-foreground">İlan Tipi</div>
+                  <div className="font-medium mt-1">{TYPE_LABEL[listing.type]}</div>
+                </div>
+                <div className="rounded-lg border border-border bg-background/50 p-3">
+                  <div className="text-xs text-muted-foreground">Kategori</div>
+                  <div className="font-medium mt-1">{cat?.label}</div>
+                </div>
+                <div className="rounded-lg border border-border bg-background/50 p-3">
+                  <div className="text-xs text-muted-foreground">Şehir</div>
+                  <div className="font-medium mt-1">{listing.city}</div>
+                </div>
+                <div className="rounded-lg border border-border bg-background/50 p-3">
+                  <div className="text-xs text-muted-foreground">İlçe</div>
+                  <div className="font-medium mt-1">{listing.district ?? "—"}</div>
+                </div>
+              </div>
+
               <div className="mt-6">
                 <h2 className="font-semibold mb-2">Açıklama</h2>
-                <p className="whitespace-pre-wrap text-foreground/90 leading-relaxed">{data.description}</p>
+                <p className="whitespace-pre-wrap text-foreground/90 leading-relaxed">{listing.description}</p>
               </div>
             </div>
           </div>
@@ -148,18 +201,19 @@ function ListingDetail() {
             <div className="flex items-center gap-3">
               <Avatar className="size-12">
                 <AvatarFallback className="bg-brand text-brand-foreground">
-                  {(data.profiles?.full_name ?? "?").slice(0, 1).toUpperCase()}
+                  {(profile?.full_name ?? "?").slice(0, 1).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="font-medium truncate flex items-center gap-1">
-                  {data.profiles?.full_name ?? "İlan Sahibi"}
-                  {data.profiles?.is_verified && (
+                  {profile?.full_name ?? "İlan Sahibi"}
+                  {profile?.is_verified && (
                     <ShieldCheck className="size-4 text-brand" aria-label="Doğrulanmış" />
                   )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
-                  {data.profiles?.city ?? data.city}
+                  {profile?.city ?? listing.city}
+                  {profile?.district ? ` / ${profile.district}` : ""}
                 </div>
               </div>
             </div>
@@ -183,6 +237,25 @@ function ListingDetail() {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={authDialog} onOpenChange={setAuthDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Üyelik Gerekli</AlertDialogTitle>
+            <AlertDialogDescription>
+              Mesaj gönderebilmek için üye girişi yapmanız gerekiyor. Hesabınız yoksa hızlıca oluşturabilirsiniz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => navigate({ to: "/auth", search: { redirect: `/ilan/${id}` } })}
+            >
+              Giriş Yap / Üye Ol
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

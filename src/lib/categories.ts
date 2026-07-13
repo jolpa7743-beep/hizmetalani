@@ -29,8 +29,8 @@ export const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map((c) => [c.key, c])
 >;
 
 export const TYPE_LABEL: Record<ListingType, string> = {
-  offering: "Hizmet Veriyor",
-  seeking: "Hizmet Arıyor",
+  offering: "İş Veren",
+  seeking: "İş Arayan",
 };
 
 export const PRICE_TYPE_LABEL: Record<string, string> = {
