@@ -73,8 +73,8 @@ function MyListings() {
       <div className="space-y-3">
         {data?.map((l) => (
           <div key={l.id} className="bg-surface border rounded-lg p-4 flex flex-col md:flex-row gap-4">
-            <div className="size-16 rounded bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center text-2xl shrink-0">
-              {CATEGORY_MAP[l.category]?.emoji}
+            <div className="size-16 rounded bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center shrink-0">
+              {(() => { const I = CATEGORY_MAP[l.category]?.icon; return I ? <I className="size-7 text-brand/70" aria-hidden /> : null; })()}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">

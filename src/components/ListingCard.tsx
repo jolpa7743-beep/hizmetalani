@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { MapPin, Eye } from "lucide-react";
+import { MapPin, Eye, Zap, Star } from "lucide-react";
 import { CATEGORY_MAP, TYPE_LABEL, formatPrice, type CategoryKey, type ListingType } from "@/lib/categories";
 
 export type ListingRow = {
@@ -24,8 +24,9 @@ function shortDate(iso: string) {
   return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
 }
 
-export function ListingCard({ item }: { item: ListingRow }) {
+export function ListingCard({ item }: { item: ListingRow & { is_urgent?: boolean; is_featured?: boolean } }) {
   const cat = CATEGORY_MAP[item.category];
+  const Icon = cat?.icon;
   const isOffering = item.type === "offering";
   return (
     <Link
@@ -34,12 +35,11 @@ export function ListingCard({ item }: { item: ListingRow }) {
       aria-label={`${item.title} — ${item.city}${item.district ? ` / ${item.district}` : ""}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-elevated)] focus-visible:-translate-y-0.5"
     >
-      {/* Görsel alan */}
       <div
-        className="relative h-32 grid place-items-center bg-gradient-to-br from-brand/10 via-brand-soft to-brand-accent/15 text-5xl"
+        className="relative h-32 grid place-items-center bg-gradient-to-br from-brand/10 via-brand-soft to-brand-accent/15"
         aria-hidden
       >
-        <span>{cat?.emoji ?? "🔧"}</span>
+        {Icon ? <Icon className="size-12 text-brand/70" strokeWidth={1.5} /> : null}
         <span
           className={
             "absolute left-2 top-2 inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide " +
@@ -48,11 +48,23 @@ export function ListingCard({ item }: { item: ListingRow }) {
         >
           {TYPE_LABEL[item.type]}
         </span>
-        {typeof item.view_count === "number" && item.view_count > 0 && (
-          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-sm bg-foreground/60 px-1.5 py-0.5 text-[10px] font-medium text-background">
-            <Eye className="size-3" /> {item.view_count}
-          </span>
-        )}
+        <div className="absolute right-2 top-2 flex items-center gap-1">
+          {item.is_featured && (
+            <span className="inline-flex items-center gap-1 rounded-sm bg-amber-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              <Star className="size-3" /> Öne Çıkan
+            </span>
+          )}
+          {item.is_urgent && (
+            <span className="inline-flex items-center gap-1 rounded-sm bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              <Zap className="size-3" /> Acil
+            </span>
+          )}
+          {typeof item.view_count === "number" && item.view_count > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-sm bg-foreground/60 px-1.5 py-0.5 text-[10px] font-medium text-background">
+              <Eye className="size-3" /> {item.view_count}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* İçerik */}

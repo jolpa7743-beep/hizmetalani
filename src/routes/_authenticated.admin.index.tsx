@@ -44,7 +44,7 @@ function AdminDashboard() {
       </div>
 
       <div className="bg-card border rounded-xl p-6 shadow-[var(--shadow-soft)]">
-        <h2 className="font-semibold mb-3">Hoş geldiniz 👋</h2>
+        <h2 className="font-semibold mb-3">Yönetim Paneli</h2>
         <p className="text-sm text-muted-foreground">
           Buradan tüm siteyi yönetebilirsiniz. Sol menüden kullanıcıları veya ilanları inceleyin.
           Yakında: destek talepleri (ticket), duyurular ve DM merkezi.

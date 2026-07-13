@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText } from "lucide-react";
+import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText, Search, MessageCircle, Megaphone, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
     if (!data) throw redirect({ to: "/" });
   },
   component: AdminLayout,
-  head: () => ({ meta: [{ title: "Yönetici Paneli — hizmetalanı.com" }] }),
+  head: () => ({ meta: [{ title: "Yönetici Paneli" }] }),
 });
 
 function AdminLayout() {
@@ -20,6 +20,10 @@ function AdminLayout() {
     { to: "/admin", label: "Panel", icon: LayoutDashboard, exact: true },
     { to: "/admin/kullanicilar", label: "Kullanıcılar", icon: Users },
     { to: "/admin/ilanlar", label: "İlanlar", icon: ListChecks },
+    { to: "/admin/ticketlar", label: "Destek Talepleri", icon: MessageCircle },
+    { to: "/admin/duyurular", label: "Duyurular", icon: Megaphone },
+    { to: "/admin/yayin", label: "Toplu DM", icon: Send },
+    { to: "/admin/seo", label: "SEO Ayarları", icon: Search },
     { to: "/admin/loglar", label: "Loglar", icon: ScrollText },
   ];
   const isActive = (to: string, exact?: boolean) =>

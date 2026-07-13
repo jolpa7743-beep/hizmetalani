@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          starts_at: string
+          target_audience: string
+          title: string
+          updated_at: string
+          variant: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          starts_at?: string
+          target_audience?: string
+          title: string
+          updated_at?: string
+          variant?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          starts_at?: string
+          target_audience?: string
+          title?: string
+          updated_at?: string
+          variant?: string
+        }
+        Relationships: []
+      }
       app_logs: {
         Row: {
           context: Json | null
@@ -84,55 +126,100 @@ export type Database = {
       }
       listings: {
         Row: {
+          available_days: string[] | null
+          available_hours: Json | null
+          benefits: string[] | null
           category: Database["public"]["Enums"]["listing_category"]
           city: string
           created_at: string
           description: string
           district: string | null
+          education_level: string | null
+          experience_years: number | null
           id: string
           images: string[]
+          is_featured: boolean
+          is_remote: boolean
+          is_urgent: boolean
+          meta_description: string | null
+          meta_title: string | null
           price: number | null
           price_type: Database["public"]["Enums"]["price_type"]
+          requirements: string[] | null
+          salary_max: number | null
+          salary_min: number | null
+          salary_period: string | null
           status: Database["public"]["Enums"]["listing_status"]
           title: string
           type: Database["public"]["Enums"]["listing_type"]
           updated_at: string
           user_id: string
           view_count: number
+          work_type: string | null
         }
         Insert: {
+          available_days?: string[] | null
+          available_hours?: Json | null
+          benefits?: string[] | null
           category: Database["public"]["Enums"]["listing_category"]
           city: string
           created_at?: string
           description: string
           district?: string | null
+          education_level?: string | null
+          experience_years?: number | null
           id?: string
           images?: string[]
+          is_featured?: boolean
+          is_remote?: boolean
+          is_urgent?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
           price?: number | null
           price_type?: Database["public"]["Enums"]["price_type"]
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string | null
           status?: Database["public"]["Enums"]["listing_status"]
           title: string
           type: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
           user_id: string
           view_count?: number
+          work_type?: string | null
         }
         Update: {
+          available_days?: string[] | null
+          available_hours?: Json | null
+          benefits?: string[] | null
           category?: Database["public"]["Enums"]["listing_category"]
           city?: string
           created_at?: string
           description?: string
           district?: string | null
+          education_level?: string | null
+          experience_years?: number | null
           id?: string
           images?: string[]
+          is_featured?: boolean
+          is_remote?: boolean
+          is_urgent?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
           price?: number | null
           price_type?: Database["public"]["Enums"]["price_type"]
+          requirements?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string | null
           status?: Database["public"]["Enums"]["listing_status"]
           title?: string
           type?: Database["public"]["Enums"]["listing_type"]
           updated_at?: string
           user_id?: string
           view_count?: number
+          work_type?: string | null
         }
         Relationships: []
       }
@@ -174,42 +261,185 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          banned_reason: string | null
           bio: string | null
+          birth_year: number | null
           city: string | null
           created_at: string
           district: string | null
           full_name: string | null
+          gender: string | null
           id: string
+          is_banned: boolean
           is_verified: boolean
+          languages: string[] | null
           phone: string | null
           phone_verified: boolean
+          skills: string[] | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           avatar_url?: string | null
+          banned_reason?: string | null
           bio?: string | null
+          birth_year?: number | null
           city?: string | null
           created_at?: string
           district?: string | null
           full_name?: string | null
+          gender?: string | null
           id: string
+          is_banned?: boolean
           is_verified?: boolean
+          languages?: string[] | null
           phone?: string | null
           phone_verified?: boolean
+          skills?: string[] | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           avatar_url?: string | null
+          banned_reason?: string | null
           bio?: string | null
+          birth_year?: number | null
           city?: string | null
           created_at?: string
           district?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
+          is_banned?: boolean
           is_verified?: boolean
+          languages?: string[] | null
           phone?: string | null
           phone_verified?: boolean
+          skills?: string[] | null
           updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          adsense_publisher_id: string | null
+          announcement_active: boolean
+          announcement_banner: string | null
+          contact_email: string
+          contact_phone: string | null
+          ga_measurement_id: string | null
+          id: number
+          og_image_url: string | null
+          robots_txt: string
+          search_console_verification: string | null
+          site_description: string
+          site_keywords: string
+          site_name: string
+          updated_at: string
+        }
+        Insert: {
+          adsense_publisher_id?: string | null
+          announcement_active?: boolean
+          announcement_banner?: string | null
+          contact_email?: string
+          contact_phone?: string | null
+          ga_measurement_id?: string | null
+          id?: number
+          og_image_url?: string | null
+          robots_txt?: string
+          search_console_verification?: string | null
+          site_description?: string
+          site_keywords?: string
+          site_name?: string
+          updated_at?: string
+        }
+        Update: {
+          adsense_publisher_id?: string | null
+          announcement_active?: boolean
+          announcement_banner?: string | null
+          contact_email?: string
+          contact_phone?: string | null
+          ga_measurement_id?: string | null
+          id?: number
+          og_image_url?: string | null
+          robots_txt?: string
+          search_console_verification?: string | null
+          site_description?: string
+          site_keywords?: string
+          site_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ticket_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_admin: boolean
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          last_message_at: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          priority?: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          priority?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -239,8 +469,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_broadcast_dm: { Args: { _body: string }; Returns: number }
       admin_get_user_id_by_email: { Args: { _email: string }; Returns: string }
       admin_list_users: { Args: never; Returns: Json }
+      admin_set_banned: {
+        Args: { _banned: boolean; _reason: string; _user_id: string }
+        Returns: undefined
+      }
+      admin_set_role: {
+        Args: {
+          _grant: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      admin_set_verified: {
+        Args: { _user_id: string; _verified: boolean }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

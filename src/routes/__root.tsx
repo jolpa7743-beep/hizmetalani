@@ -13,8 +13,11 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { getSiteSettings, type SiteSettings } from "@/lib/settings.functions";
+import ogDefault from "@/assets/og-default.jpg";
 
 function NotFoundComponent() {
   return (
@@ -76,32 +79,82 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
+  loader: async ({ context }) => {
+    try {
+      const s = await context.queryClient.ensureQueryData({
+        queryKey: ["site_settings"],
+        queryFn: () => getSiteSettings(),
+        staleTime: 60_000,
+      });
+      return { settings: s as SiteSettings | null };
+    } catch {
+      return { settings: null as SiteSettings | null };
+    }
+  },
+  head: ({ loaderData }) => {
+    const s = loaderData?.settings;
+    const title = s?.site_name
+      ? `${s.site_name} — Bakıcı, Temizlik ve Ev Hizmetleri İlanları`
+      : "hizmetalanı.com — Bakıcı, Temizlik ve Evcil Hayvan Geçici Yuva İlanları";
+    const description = s?.site_description
+      ?? "Türkiye'nin ev ve bakım hizmetleri ilan platformu. Bakıcı, ev/ofis/merdiven temizliği ve evcil hayvan geçici yuva ilanları — ücretsiz yayınla, güvenle iletişime geç.";
+    const keywords = s?.site_keywords ?? "bakıcı ilanı, temizlikçi ilanı, ev temizliği, ofis temizliği, evcil hayvan bakıcısı";
+    const ogImage = s?.og_image_url || ogDefault;
+
+    const meta: Array<Record<string, string>> = [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "hizmetalanı.com — Bakıcı, Temizlik ve Evcil Hayvan Geçici Yuva İlanları" },
-      {
-        name: "description",
-        content:
-          "Türkiye'nin ev ve bakım hizmetleri ilan platformu. Bakıcı, ev/ofis/merdiven temizliği ve evcil hayvan geçici yuva ilanları — ücretsiz yayınla, güvenle iletişime geç.",
-      },
-      { name: "author", content: "hizmetalanı.com" },
-      { property: "og:title", content: "hizmetalanı.com — İş & Hizmet İlanları" },
-      { property: "og:description", content: "Bakıcı, temizlikçi ve evcil hayvan geçici yuva ilanları tek platformda." },
+      { title },
+      { name: "description", content: description },
+      { name: "keywords", content: keywords },
+      { name: "author", content: s?.site_name ?? "hizmetalanı.com" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "tr_TR" },
+      { property: "og:site_name", content: s?.site_name ?? "hizmetalanı.com" },
+      { property: "og:image", content: ogImage },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: ogImage },
       { name: "theme-color", content: "#1E40AF" },
-    ],
-    links: [
+      { httpEquiv: "content-language", content: "tr-TR" },
+    ];
+    if (s?.search_console_verification) {
+      meta.push({ name: "google-site-verification", content: s.search_console_verification });
+    }
+
+    const links: Array<Record<string, string>> = [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" },
-    ],
-  }),
+    ];
+
+    const scripts: Array<Record<string, string | boolean>> = [];
+    scripts.push({
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          { "@type": "Organization", name: s?.site_name ?? "hizmetalanı.com", description, email: s?.contact_email ?? undefined, telephone: s?.contact_phone ?? undefined },
+          { "@type": "WebSite", name: s?.site_name ?? "hizmetalanı.com", potentialAction: { "@type": "SearchAction", target: "/?q={search_term_string}", "query-input": "required name=search_term_string" } },
+        ],
+      }),
+    });
+    if (s?.ga_measurement_id) {
+      scripts.push({ src: `https://www.googletagmanager.com/gtag/js?id=${s.ga_measurement_id}`, async: true });
+      scripts.push({ children: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${s.ga_measurement_id}');` });
+    }
+    if (s?.adsense_publisher_id) {
+      scripts.push({ src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${s.adsense_publisher_id}`, async: true, crossorigin: "anonymous" });
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { meta: meta as any, links: links as any, scripts: scripts as any };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -140,6 +193,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-dvh flex-col bg-background">
         <a href="#main-content" className="skip-link">İçeriğe atla</a>
+        <AnnouncementBanner />
         <AppHeader />
         <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
           <Outlet />
