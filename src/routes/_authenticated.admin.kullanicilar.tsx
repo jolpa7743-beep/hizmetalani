@@ -13,6 +13,13 @@ export const Route = createFileRoute("/_authenticated/admin/kullanicilar")({
   component: AdminUsers,
 });
 
+type AdminUser = {
+  id: string; email: string; created_at: string; last_sign_in_at: string | null;
+  email_confirmed_at: string | null; full_name: string | null; avatar_url: string | null;
+  city: string | null; district: string | null; phone: string | null;
+  is_verified: boolean; roles: string[];
+};
+
 function AdminUsers() {
   const fetchUsers = useServerFn(adminListUsers);
   const toggleRole = useServerFn(adminToggleRole);
