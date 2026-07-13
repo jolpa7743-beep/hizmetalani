@@ -27,6 +27,7 @@ import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedMesajlarRouteImport } from './routes/_authenticated.mesajlar'
 import { Route as AuthenticatedIlanlarimRouteImport } from './routes/_authenticated.ilanlarim'
 import { Route as AuthenticatedIlanVerRouteImport } from './routes/_authenticated.ilan-ver'
+import { Route as AuthenticatedDestekRouteImport } from './routes/_authenticated.destek'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
 import { Route as AuthenticatedMesajlarIdRouteImport } from './routes/_authenticated.mesajlar.$id'
@@ -127,6 +128,11 @@ const AuthenticatedIlanVerRoute = AuthenticatedIlanVerRouteImport.update({
   path: '/ilan-ver',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDestekRoute = AuthenticatedDestekRouteImport.update({
+  id: '/destek',
+  path: '/destek',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/destek': typeof AuthenticatedDestekRoute
   '/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
@@ -225,6 +232,7 @@ export interface FileRoutesByTo {
   '/nasil-calisir': typeof NasilCalisirRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/destek': typeof AuthenticatedDestekRoute
   '/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
@@ -256,6 +264,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/destek': typeof AuthenticatedDestekRoute
   '/_authenticated/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/_authenticated/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/_authenticated/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/admin'
+    | '/destek'
     | '/ilan-ver'
     | '/ilanlarim'
     | '/mesajlar'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/nasil-calisir'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/destek'
     | '/ilan-ver'
     | '/ilanlarim'
     | '/mesajlar'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/_authenticated/admin'
+    | '/_authenticated/destek'
     | '/_authenticated/ilan-ver'
     | '/_authenticated/ilanlarim'
     | '/_authenticated/mesajlar'
@@ -506,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIlanVerRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/destek': {
+      id: '/_authenticated/destek'
+      path: '/destek'
+      fullPath: '/destek'
+      preLoaderRoute: typeof AuthenticatedDestekRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -619,6 +638,7 @@ const AuthenticatedMesajlarRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDestekRoute: typeof AuthenticatedDestekRoute
   AuthenticatedIlanVerRoute: typeof AuthenticatedIlanVerRoute
   AuthenticatedIlanlarimRoute: typeof AuthenticatedIlanlarimRoute
   AuthenticatedMesajlarRoute: typeof AuthenticatedMesajlarRouteWithChildren
@@ -627,6 +647,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDestekRoute: AuthenticatedDestekRoute,
   AuthenticatedIlanVerRoute: AuthenticatedIlanVerRoute,
   AuthenticatedIlanlarimRoute: AuthenticatedIlanlarimRoute,
   AuthenticatedMesajlarRoute: AuthenticatedMesajlarRouteWithChildren,

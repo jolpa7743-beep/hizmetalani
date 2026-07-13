@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LogOut, MessageSquare, Plus, User as UserIcon, Menu, X, LayoutList, Shield } from "lucide-react";
+import { LogOut, MessageSquare, Plus, User as UserIcon, Menu, X, LayoutList, Shield, LifeBuoy } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -99,6 +99,9 @@ export function AppHeader() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate({ to: "/mesajlar" })}>
                     <MessageSquare className="size-4 mr-2" aria-hidden /> Mesajlarım
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/destek" })}>
+                    <LifeBuoy className="size-4 mr-2" aria-hidden /> Destek
                   </DropdownMenuItem>
                   {isAdmin && (
                     <>
