@@ -102,8 +102,8 @@ function AdminListings() {
                 <tr key={l.id} className="border-t hover:bg-muted/30">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center text-lg shrink-0">
-                        {CATEGORY_MAP[l.category]?.emoji}
+                      <div className="size-10 rounded bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center shrink-0">
+                        {(() => { const I = CATEGORY_MAP[l.category]?.icon; return I ? <I className="size-5 text-brand/70" aria-hidden /> : null; })()}
                       </div>
                       <div className="min-w-0">
                         <div className="font-medium truncate max-w-[280px]">{l.title}</div>

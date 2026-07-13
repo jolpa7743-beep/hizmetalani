@@ -115,7 +115,7 @@ function NewListing() {
                 <SelectContent>
                   {availableCategories.map((c) => (
                     <SelectItem key={c.key} value={c.key}>
-                      {c.emoji} {c.label}
+                      {c.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

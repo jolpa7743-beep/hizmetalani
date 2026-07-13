@@ -132,7 +132,7 @@ function HomePage() {
               <SelectTrigger className="h-11 bg-surface" aria-label="Kategori"><SelectValue placeholder="Kategori" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tüm Kategoriler</SelectItem>
-                {CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.emoji} {c.short}</SelectItem>)}
+                {CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.short}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select
@@ -225,7 +225,7 @@ function HomePage() {
               ))}
               {!isLoading && (listings?.length ?? 0) === 0 && (
                 <div className="col-span-full text-center py-16 border border-dashed border-border rounded-2xl bg-card">
-                  <div className="text-4xl" aria-hidden>🔍</div>
+                  <Search className="size-10 mx-auto text-muted-foreground" aria-hidden />
                   <p className="mt-3 text-lg font-semibold">Henüz ilan bulunamadı</p>
                   <p className="mt-1 text-sm text-muted-foreground">Filtreleri değiştirin ya da ilk ilanı siz verin.</p>
                   <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
@@ -335,7 +335,7 @@ function FilterPanel({
             {CATEGORIES.map((c) => (
               <CategoryRadio
                 key={c.key}
-                label={<><span aria-hidden className="mr-1.5">{c.emoji}</span>{c.short}</>}
+                label={<><c.icon className="mr-1.5 inline size-4" aria-hidden />{c.short}</>}
                 active={search.kategori === c.key}
                 onClick={() => setParam("kategori", c.key)}
               />

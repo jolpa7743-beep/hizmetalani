@@ -139,8 +139,8 @@ function ListingDetail() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
           <div className="bg-surface border border-border rounded-xl overflow-hidden">
-            <div className="h-56 md:h-72 bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center text-8xl">
-              {cat?.emoji}
+            <div className="h-56 md:h-72 bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center">
+              {cat?.icon ? <cat.icon className="size-24 text-brand/60" strokeWidth={1.25} aria-hidden /> : null}
             </div>
             <div className="p-6">
               <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -232,7 +232,7 @@ function ListingDetail() {
           </div>
 
           <div className="bg-surface border border-border rounded-xl p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground mb-2">⚠️ Güvenlik Uyarısı</p>
+            <p className="font-medium text-foreground mb-2 flex items-center gap-1.5"><ShieldAlert className="size-4 text-amber-600" aria-hidden /> Güvenlik Uyarısı</p>
             <p>Görüşmeden önce ödeme yapmayın, kimlik bilgilerinizi paylaşmayın. Anlaşmalarınızı yazılı yapın.</p>
           </div>
         </div>
