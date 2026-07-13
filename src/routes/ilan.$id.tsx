@@ -87,7 +87,18 @@ const SALARY_PERIOD_LABEL: Record<string, string> = {
   job: "iş başı",
 };
 const DAYS_ORDER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
-const NEG = "Detaylar konuşulur";
+// Alan bazlı "belirtilmemiş" mesajları — kullanıcı ne eksik olduğunu net görsün
+const EMPTY = {
+  work_type: "Çalışma tipi belirtilmemiş — görüşmeye açık",
+  salary: "Maaş belirtilmemiş — pazarlığa açık",
+  hours: "Çalışma saatleri belirtilmemiş — esnek",
+  experience: "Deneyim şartı belirtilmemiş — fark etmez",
+  education: "Eğitim şartı belirtilmemiş — fark etmez",
+  remote: "Uzaktan/acil bilgisi belirtilmemiş",
+  days: "Çalışma / izin günleri belirtilmemiş — esnek",
+  requirements: "Özel bir şart belirtilmemiş — görüşmeye açık",
+  benefits: "Yan hak belirtilmemiş — görüşmeye açık",
+} as const;
 
 function ListingDetail() {
   const { id } = Route.useParams();
@@ -236,35 +247,39 @@ function ListingDetail() {
               <div className="mt-6">
                 <h2 className="font-semibold mb-3">Çalışma Koşulları</h2>
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <InfoBox label="Çalışma Tipi" value={listing.work_type ? WORK_TYPE_LABEL[listing.work_type] ?? listing.work_type : NEG} />
+                  <InfoBox label="Çalışma Tipi" value={listing.work_type ? WORK_TYPE_LABEL[listing.work_type] ?? listing.work_type : EMPTY.work_type} isEmpty={!listing.work_type} />
                   <InfoBox
                     label="Maaş / Ücret"
                     value={
                       listing.salary_min || listing.salary_max
                         ? `${listing.salary_min ? "₺" + listing.salary_min.toLocaleString("tr-TR") : ""}${listing.salary_min && listing.salary_max ? " - " : ""}${listing.salary_max ? "₺" + listing.salary_max.toLocaleString("tr-TR") : ""} ${SALARY_PERIOD_LABEL[listing.salary_period ?? "monthly"] ?? ""}`.trim()
-                        : NEG
+                        : EMPTY.salary
                     }
+                    isEmpty={!(listing.salary_min || listing.salary_max)}
                   />
                   <InfoBox
                     label="Çalışma Saatleri"
                     value={
                       listing.available_hours?.start || listing.available_hours?.end
                         ? `${listing.available_hours?.start ?? "?"} - ${listing.available_hours?.end ?? "?"}`
-                        : NEG
+                        : EMPTY.hours
                     }
+                    isEmpty={!(listing.available_hours?.start || listing.available_hours?.end)}
                   />
                   <InfoBox
                     label="Deneyim"
-                    value={listing.experience_years != null ? `${listing.experience_years} yıl` : NEG}
+                    value={listing.experience_years != null ? `${listing.experience_years} yıl` : EMPTY.experience}
+                    isEmpty={listing.experience_years == null}
                   />
-                  <InfoBox label="Eğitim" value={listing.education_level ? EDU_LABEL[listing.education_level] ?? listing.education_level : NEG} />
+                  <InfoBox label="Eğitim" value={listing.education_level ? EDU_LABEL[listing.education_level] ?? listing.education_level : EMPTY.education} isEmpty={!listing.education_level} />
                   <InfoBox
                     label="Uzaktan / Acil"
                     value={
                       [listing.is_remote ? "Uzaktan çalışılabilir" : null, listing.is_urgent ? "Acil" : null]
                         .filter(Boolean)
-                        .join(" • ") || NEG
+                        .join(" • ") || EMPTY.remote
                     }
+                    isEmpty={!listing.is_remote && !listing.is_urgent}
                   />
                 </div>
               </div>
@@ -297,7 +312,7 @@ function ListingDetail() {
               ) : (
                 <div className="mt-6">
                   <h2 className="font-semibold mb-2">Çalışma / İzin Günleri</h2>
-                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                  <p className="text-sm text-muted-foreground italic">{EMPTY.days}</p>
                 </div>
               )}
 
@@ -309,7 +324,7 @@ function ListingDetail() {
                     {listing.requirements.map((r, i) => <li key={i}>{r}</li>)}
                   </ul>
                 ) : (
-                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                  <p className="text-sm text-muted-foreground italic">{EMPTY.requirements}</p>
                 )}
               </div>
 
@@ -321,7 +336,7 @@ function ListingDetail() {
                     {listing.benefits.map((r, i) => <li key={i}>{r}</li>)}
                   </ul>
                 ) : (
-                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                  <p className="text-sm text-muted-foreground italic">{EMPTY.benefits}</p>
                 )}
               </div>
             </div>
@@ -392,12 +407,14 @@ function ListingDetail() {
   );
 }
 
-function InfoBox({ label, value }: { label: string; value: string }) {
-  const isNeg = value === NEG || !value;
+function InfoBox({ label, value, isEmpty }: { label: string; value: string; isEmpty?: boolean }) {
   return (
     <div className="rounded-lg border border-border bg-background/50 p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={`font-medium mt-1 ${isNeg ? "text-muted-foreground italic" : ""}`}>{value || NEG}</div>
+      <div className={`font-medium mt-1 ${isEmpty ? "text-muted-foreground italic text-sm font-normal" : ""}`}>
+        {value}
+      </div>
     </div>
   );
 }
+

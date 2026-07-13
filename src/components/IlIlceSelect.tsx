@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Check, ChevronsUpDown, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ILLER, getIlceler } from "@/lib/turkiye";
@@ -28,6 +28,19 @@ type Props = {
   className?: string;
 };
 
+// Türkçe karakterleri normalize et — "İstanbul" araması "istanbul" ile eşleşsin
+const norm = (s: string) =>
+  s
+    .toLocaleLowerCase("tr")
+    .replaceAll("ı", "i")
+    .replaceAll("ş", "s")
+    .replaceAll("ğ", "g")
+    .replaceAll("ü", "u")
+    .replaceAll("ö", "o")
+    .replaceAll("ç", "c");
+
+const ALL_TOKEN = "__all__";
+
 function Combo({
   value,
   onChange,
@@ -46,8 +59,16 @@ function Combo({
   allText?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = norm(query.trim());
+    if (!q) return options;
+    return options.filter((o) => norm(o).includes(q));
+  }, [options, query]);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQuery(""); }}>
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -66,28 +87,35 @@ function Combo({
           <ChevronsUpDown className="size-4 opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover" align="start">
-        <Command
-          filter={(v, s) => v.toLocaleLowerCase("tr").includes(s.toLocaleLowerCase("tr")) ? 1 : 0}
-        >
-          <CommandInput placeholder="Ara..." className="h-10" />
-          <CommandList className="max-h-72">
+      <PopoverContent
+        className="w-[--radix-popover-trigger-width] p-0 z-50 bg-popover pointer-events-auto"
+        align="start"
+        sideOffset={4}
+      >
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Ara..."
+            className="h-10"
+            value={query}
+            onValueChange={setQuery}
+          />
+          <CommandList className="max-h-72 overflow-y-auto">
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
-              {allText && (
+              {allText && !query && (
                 <CommandItem
-                  value=""
-                  onSelect={() => { onChange(""); setOpen(false); }}
+                  value={ALL_TOKEN}
+                  onSelect={() => { onChange(""); setOpen(false); setQuery(""); }}
                 >
                   <Check className={cn("mr-2 size-4", !value ? "opacity-100" : "opacity-0")} />
                   {allText}
                 </CommandItem>
               )}
-              {options.map((o) => (
+              {filtered.map((o) => (
                 <CommandItem
                   key={o}
                   value={o}
-                  onSelect={() => { onChange(o); setOpen(false); }}
+                  onSelect={() => { onChange(o); setOpen(false); setQuery(""); }}
                 >
                   <Check className={cn("mr-2 size-4", value === o ? "opacity-100" : "opacity-0")} />
                   {o}
