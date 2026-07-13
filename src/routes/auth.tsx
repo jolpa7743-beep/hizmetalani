@@ -47,7 +47,7 @@ function AuthPage() {
     setLoading("seed");
     try {
       await seed();
-      toast.success("Demo hesaplar hazır! demo/demo veya admin/admin ile giriş yapabilirsiniz.");
+      toast.success("Demo hesaplar hazır! demo@demo.com/demo1234 veya admin@admin.com/admin123");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Seed başarısız");
     } finally {
@@ -207,10 +207,10 @@ function AuthPage() {
                 </p>
                 <div className="grid grid-cols-3 gap-1.5">
                   <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => fillDemo("demo")}>
-                    demo/demo
+                    demo1234
                   </Button>
                   <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => fillDemo("admin")}>
-                    admin/admin
+                    admin123
                   </Button>
                   <Button
                     type="button"
