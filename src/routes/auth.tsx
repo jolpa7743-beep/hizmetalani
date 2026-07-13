@@ -27,8 +27,16 @@ export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Giriş Yap / Üye Ol — hizmetalanı.com" }] }),
 });
 
-const emailSchema = z.string().trim().email("Geçerli bir e-posta girin");
-const passwordSchema = z.string().min(6, "Şifre en az 6 karakter olmalı").max(72);
+function getPasswordStrength(pw: string): { score: 0 | 1 | 2 | 3; label: string; color: string } {
+  if (!pw) return { score: 0, label: "", color: "" };
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw)) score++;
+  const labels = ["Çok zayıf", "Zayıf", "Orta", "Güçlü"] as const;
+  const colors = ["bg-destructive", "bg-amber-500", "bg-yellow-500", "bg-emerald-500"];
+  return { score: score as 0 | 1 | 2 | 3, label: labels[score], color: colors[score] };
+}
 
 function AuthPage() {
   const { user } = useAuth();
