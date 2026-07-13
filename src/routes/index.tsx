@@ -150,13 +150,13 @@ function HomePage() {
           </Link>
         </div>
 
-        {/* Feed */}
-        <section aria-label="İlanlar" className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {/* Feed — sahibinden tarzı liste */}
+        <section aria-label="İlanlar" className="mt-4 rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)] overflow-hidden">
           {isLoading && Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-32 rounded-xl border border-border bg-card animate-pulse" />
+            <div key={i} className="h-20 border-b border-border last:border-b-0 bg-surface animate-pulse" />
           ))}
           {!isLoading && (listings?.length ?? 0) === 0 && (
-            <div className="col-span-full text-center py-16 border border-dashed border-border rounded-2xl bg-card">
+            <div className="text-center py-16 px-4">
               <div className="text-4xl" aria-hidden>🔍</div>
               <p className="mt-3 text-lg font-semibold">Henüz ilan bulunamadı</p>
               <p className="mt-1 text-sm text-muted-foreground">Filtreleri değiştirin ya da ilk ilanı siz verin.</p>
