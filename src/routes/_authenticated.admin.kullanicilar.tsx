@@ -32,7 +32,7 @@ function AdminUsers() {
     queryFn: () => fetchUsers(),
   });
 
-  const filtered = (data ?? []).filter((u) => {
+  const filtered = ((data ?? []) as AdminUser[]).filter((u) => {
     const s = q.toLowerCase();
     return !s || u.email.toLowerCase().includes(s) || (u.full_name ?? "").toLowerCase().includes(s);
   });
