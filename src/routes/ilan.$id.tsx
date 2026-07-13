@@ -407,12 +407,14 @@ function ListingDetail() {
   );
 }
 
-function InfoBox({ label, value }: { label: string; value: string }) {
-  const isNeg = value === NEG || !value;
+function InfoBox({ label, value, isEmpty }: { label: string; value: string; isEmpty?: boolean }) {
   return (
     <div className="rounded-lg border border-border bg-background/50 p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={`font-medium mt-1 ${isNeg ? "text-muted-foreground italic" : ""}`}>{value || NEG}</div>
+      <div className={`font-medium mt-1 ${isEmpty ? "text-muted-foreground italic text-sm font-normal" : ""}`}>
+        {value}
+      </div>
     </div>
   );
 }
+
