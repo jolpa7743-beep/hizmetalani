@@ -247,35 +247,39 @@ function ListingDetail() {
               <div className="mt-6">
                 <h2 className="font-semibold mb-3">Çalışma Koşulları</h2>
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <InfoBox label="Çalışma Tipi" value={listing.work_type ? WORK_TYPE_LABEL[listing.work_type] ?? listing.work_type : NEG} />
+                  <InfoBox label="Çalışma Tipi" value={listing.work_type ? WORK_TYPE_LABEL[listing.work_type] ?? listing.work_type : EMPTY.work_type} isEmpty={!listing.work_type} />
                   <InfoBox
                     label="Maaş / Ücret"
                     value={
                       listing.salary_min || listing.salary_max
                         ? `${listing.salary_min ? "₺" + listing.salary_min.toLocaleString("tr-TR") : ""}${listing.salary_min && listing.salary_max ? " - " : ""}${listing.salary_max ? "₺" + listing.salary_max.toLocaleString("tr-TR") : ""} ${SALARY_PERIOD_LABEL[listing.salary_period ?? "monthly"] ?? ""}`.trim()
-                        : NEG
+                        : EMPTY.salary
                     }
+                    isEmpty={!(listing.salary_min || listing.salary_max)}
                   />
                   <InfoBox
                     label="Çalışma Saatleri"
                     value={
                       listing.available_hours?.start || listing.available_hours?.end
                         ? `${listing.available_hours?.start ?? "?"} - ${listing.available_hours?.end ?? "?"}`
-                        : NEG
+                        : EMPTY.hours
                     }
+                    isEmpty={!(listing.available_hours?.start || listing.available_hours?.end)}
                   />
                   <InfoBox
                     label="Deneyim"
-                    value={listing.experience_years != null ? `${listing.experience_years} yıl` : NEG}
+                    value={listing.experience_years != null ? `${listing.experience_years} yıl` : EMPTY.experience}
+                    isEmpty={listing.experience_years == null}
                   />
-                  <InfoBox label="Eğitim" value={listing.education_level ? EDU_LABEL[listing.education_level] ?? listing.education_level : NEG} />
+                  <InfoBox label="Eğitim" value={listing.education_level ? EDU_LABEL[listing.education_level] ?? listing.education_level : EMPTY.education} isEmpty={!listing.education_level} />
                   <InfoBox
                     label="Uzaktan / Acil"
                     value={
                       [listing.is_remote ? "Uzaktan çalışılabilir" : null, listing.is_urgent ? "Acil" : null]
                         .filter(Boolean)
-                        .join(" • ") || NEG
+                        .join(" • ") || EMPTY.remote
                     }
+                    isEmpty={!listing.is_remote && !listing.is_urgent}
                   />
                 </div>
               </div>
