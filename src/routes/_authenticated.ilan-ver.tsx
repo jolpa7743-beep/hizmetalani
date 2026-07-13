@@ -69,6 +69,7 @@ function NewListing() {
     // Yeni dinamik alanlar
     work_type: "" as string,
     available_days: [] as string[],
+    off_days: [] as string[],
     hours_start: "",
     hours_end: "",
     salary_min: "",
@@ -86,13 +87,28 @@ function NewListing() {
 
   const availableCategories = CATEGORIES.filter((c) => c.types.includes(form.type));
 
-  const toggleDay = (d: string) => {
-    setForm((f) => ({
-      ...f,
-      available_days: f.available_days.includes(d)
-        ? f.available_days.filter((x) => x !== d)
-        : [...f.available_days, d],
-    }));
+  // Gün durum döngüsü: boş → çalışma (mavi) → izinli (yeşil) → boş
+  const dayState = (d: string): "work" | "off" | "none" => {
+    if (form.available_days.includes(d)) return "work";
+    if (form.off_days.includes(d)) return "off";
+    return "none";
+  };
+  const cycleDay = (d: string) => {
+    setForm((f) => {
+      const isWork = f.available_days.includes(d);
+      const isOff = f.off_days.includes(d);
+      if (!isWork && !isOff) {
+        return { ...f, available_days: [...f.available_days, d] };
+      }
+      if (isWork) {
+        return {
+          ...f,
+          available_days: f.available_days.filter((x) => x !== d),
+          off_days: [...f.off_days, d],
+        };
+      }
+      return { ...f, off_days: f.off_days.filter((x) => x !== d) };
+    });
   };
 
   const addTag = (key: "requirements" | "benefits", value: string, inputKey: "req_input" | "ben_input") => {
