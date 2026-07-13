@@ -40,6 +40,19 @@ type Listing = {
   price_type: string;
   created_at: string;
   view_count: number;
+  work_type: string | null;
+  available_days: string[] | null;
+  off_days: string[] | null;
+  available_hours: { start: string | null; end: string | null } | null;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_period: string | null;
+  experience_years: number | null;
+  education_level: string | null;
+  requirements: string[] | null;
+  benefits: string[] | null;
+  is_remote: boolean | null;
+  is_urgent: boolean | null;
 };
 
 type Profile = {
@@ -49,6 +62,32 @@ type Profile = {
   city: string | null;
   district: string | null;
 };
+
+const WORK_TYPE_LABEL: Record<string, string> = {
+  full_time: "Tam Zamanlı",
+  part_time: "Yarı Zamanlı",
+  contract: "Sözleşmeli",
+  freelance: "Serbest / Freelance",
+  internship: "Staj",
+  seasonal: "Sezonluk",
+  one_time: "Tek Seferlik",
+};
+const EDU_LABEL: Record<string, string> = {
+  primary: "İlköğretim",
+  high_school: "Lise",
+  associate: "Ön Lisans",
+  bachelor: "Lisans",
+  master: "Yüksek Lisans",
+  phd: "Doktora",
+};
+const SALARY_PERIOD_LABEL: Record<string, string> = {
+  hourly: "saatlik",
+  daily: "günlük",
+  monthly: "aylık",
+  job: "iş başı",
+};
+const DAYS_ORDER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+const NEG = "Detaylar konuşulur";
 
 function ListingDetail() {
   const { id } = Route.useParams();
@@ -61,7 +100,7 @@ function ListingDetail() {
     queryFn: async () => {
       const { data: listing, error } = await supabase
         .from("listings")
-        .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count")
+        .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count,work_type,available_days,off_days,available_hours,salary_min,salary_max,salary_period,experience_years,education_level,requirements,benefits,is_remote,is_urgent")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -71,7 +110,7 @@ function ListingDetail() {
         .select("full_name,avatar_url,is_verified,city,district")
         .eq("id", listing.user_id)
         .maybeSingle();
-      return { listing: listing as Listing, profile: (profile ?? null) as Profile | null };
+      return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
     },
   });
 
