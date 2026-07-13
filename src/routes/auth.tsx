@@ -39,7 +39,8 @@ function AuthPage() {
 
   const fillDemo = (kind: "demo" | "admin") => {
     setTab("signin");
-    setForm({ email: `${kind}@${kind}.com`, password: kind, fullName: "" });
+    const password = kind === "demo" ? "demo1234" : "admin123";
+    setForm({ email: `${kind}@${kind}.com`, password, fullName: "" });
   };
 
   const runSeed = async () => {
