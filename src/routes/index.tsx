@@ -280,32 +280,40 @@ function FilterPanel({
         {/* İl */}
         <div>
           <Label className="text-xs uppercase tracking-wide text-muted-foreground">İl</Label>
-          <Select value={search.sehir ?? "all"} onValueChange={(v) => setParam("sehir", v === "all" ? undefined : v)}>
+          <Select
+            value={search.sehir ?? "all"}
+            onValueChange={(v) => {
+              const next = v === "all" ? undefined : v;
+              setIlceInput("");
+              navigate({ search: (prev) => ({ ...prev, sehir: next, ilce: undefined }) });
+            }}
+          >
             <SelectTrigger className="h-10 mt-1.5 bg-surface"><SelectValue placeholder="Tüm İller" /></SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-72">
               <SelectItem value="all">Tüm İller</SelectItem>
               {ILLER.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
 
-        {/* İlçe */}
+        {/* İlçe — il seçildiğinde dinamik yüklenir */}
         <div>
-          <Label htmlFor="ilce" className="text-xs uppercase tracking-wide text-muted-foreground">İlçe</Label>
-          <form
-            className="mt-1.5 flex gap-2"
-            onSubmit={(e) => { e.preventDefault(); setParam("ilce", ilceInput); }}
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">İlçe</Label>
+          <Select
+            value={search.ilce ?? "all"}
+            onValueChange={(v) => setParam("ilce", v === "all" ? undefined : v)}
+            disabled={!search.sehir}
           >
-            <Input
-              id="ilce"
-              placeholder="ör. Kadıköy"
-              className="h-10 bg-surface"
-              value={ilceInput}
-              onChange={(e) => setIlceInput(e.target.value)}
-            />
-            <Button type="submit" size="sm" variant="outline" className="h-10">Uygula</Button>
-          </form>
+            <SelectTrigger className="h-10 mt-1.5 bg-surface">
+              <SelectValue placeholder={search.sehir ? "Tüm İlçeler" : "Önce il seçin"} />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              <SelectItem value="all">Tüm İlçeler</SelectItem>
+              {getIlceler(search.sehir).map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
+
 
         {/* İlan Tipi */}
         <div>
