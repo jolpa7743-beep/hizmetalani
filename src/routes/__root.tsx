@@ -137,9 +137,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-dvh flex-col bg-background">
+        <a href="#main-content" className="skip-link">İçeriğe atla</a>
         <AppHeader />
-        <main className="flex-1">
+        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
           <Outlet />
         </main>
         <AppFooter />
