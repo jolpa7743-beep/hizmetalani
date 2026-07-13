@@ -69,6 +69,7 @@ function NewListing() {
     // Yeni dinamik alanlar
     work_type: "" as string,
     available_days: [] as string[],
+    off_days: [] as string[],
     hours_start: "",
     hours_end: "",
     salary_min: "",
@@ -86,13 +87,28 @@ function NewListing() {
 
   const availableCategories = CATEGORIES.filter((c) => c.types.includes(form.type));
 
-  const toggleDay = (d: string) => {
-    setForm((f) => ({
-      ...f,
-      available_days: f.available_days.includes(d)
-        ? f.available_days.filter((x) => x !== d)
-        : [...f.available_days, d],
-    }));
+  // Gün durum döngüsü: boş → çalışma (mavi) → izinli (yeşil) → boş
+  const dayState = (d: string): "work" | "off" | "none" => {
+    if (form.available_days.includes(d)) return "work";
+    if (form.off_days.includes(d)) return "off";
+    return "none";
+  };
+  const cycleDay = (d: string) => {
+    setForm((f) => {
+      const isWork = f.available_days.includes(d);
+      const isOff = f.off_days.includes(d);
+      if (!isWork && !isOff) {
+        return { ...f, available_days: [...f.available_days, d] };
+      }
+      if (isWork) {
+        return {
+          ...f,
+          available_days: f.available_days.filter((x) => x !== d),
+          off_days: [...f.off_days, d],
+        };
+      }
+      return { ...f, off_days: f.off_days.filter((x) => x !== d) };
+    });
   };
 
   const addTag = (key: "requirements" | "benefits", value: string, inputKey: "req_input" | "ben_input") => {
@@ -134,6 +150,7 @@ function NewListing() {
         price_type: parsed.data.price_type,
         work_type: form.work_type || null,
         available_days: form.available_days.length ? form.available_days : null,
+        off_days: form.off_days.length ? form.off_days : null,
         available_hours: hours,
         salary_min: salaryMin,
         salary_max: salaryMax,
@@ -243,21 +260,34 @@ function NewListing() {
               </div>
             </div>
 
-            {/* Müsait Günler */}
+            {/* Çalışma / İzin Günleri */}
             <div>
-              <Label>Müsait / İzinli Günler</Label>
+              <Label>Çalışma ve İzin Günleri</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Bir güne tıklayın: 1. tık <span className="text-brand font-medium">mavi = çalışma günü</span>, 2. tık <span className="text-emerald-600 font-medium">yeşil = izinli gün</span>, 3. tık boşaltır.
+              </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {DAYS.map((d) => {
-                  const active = form.available_days.includes(d);
+                  const s = dayState(d);
+                  const cls =
+                    s === "work"
+                      ? "bg-brand text-brand-foreground border-brand"
+                      : s === "off"
+                      ? "bg-emerald-500 text-white border-emerald-500"
+                      : "border-border hover:bg-muted";
                   return (
-                    <button type="button" key={d} onClick={() => toggleDay(d)}
-                      className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${active ? "bg-brand text-brand-foreground border-brand" : "border-border hover:bg-muted"}`}>
+                    <button type="button" key={d} onClick={() => cycleDay(d)}
+                      className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${cls}`}
+                      aria-label={`${d} - ${s === "work" ? "çalışma günü" : s === "off" ? "izinli" : "seçili değil"}`}>
                       {d}
                     </button>
                   );
                 })}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">Çalışabileceğiniz veya izinli olduğunuz günleri seçebilirsiniz.</p>
+              <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5"><span className="size-3 rounded-full bg-brand" /> Çalışma günü</span>
+                <span className="inline-flex items-center gap-1.5"><span className="size-3 rounded-full bg-emerald-500" /> İzinli gün</span>
+              </div>
             </div>
 
             {/* Saatler */}

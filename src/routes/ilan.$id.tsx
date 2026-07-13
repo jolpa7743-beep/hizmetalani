@@ -40,6 +40,19 @@ type Listing = {
   price_type: string;
   created_at: string;
   view_count: number;
+  work_type: string | null;
+  available_days: string[] | null;
+  off_days: string[] | null;
+  available_hours: { start: string | null; end: string | null } | null;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_period: string | null;
+  experience_years: number | null;
+  education_level: string | null;
+  requirements: string[] | null;
+  benefits: string[] | null;
+  is_remote: boolean | null;
+  is_urgent: boolean | null;
 };
 
 type Profile = {
@@ -49,6 +62,32 @@ type Profile = {
   city: string | null;
   district: string | null;
 };
+
+const WORK_TYPE_LABEL: Record<string, string> = {
+  full_time: "Tam Zamanlı",
+  part_time: "Yarı Zamanlı",
+  contract: "Sözleşmeli",
+  freelance: "Serbest / Freelance",
+  internship: "Staj",
+  seasonal: "Sezonluk",
+  one_time: "Tek Seferlik",
+};
+const EDU_LABEL: Record<string, string> = {
+  primary: "İlköğretim",
+  high_school: "Lise",
+  associate: "Ön Lisans",
+  bachelor: "Lisans",
+  master: "Yüksek Lisans",
+  phd: "Doktora",
+};
+const SALARY_PERIOD_LABEL: Record<string, string> = {
+  hourly: "saatlik",
+  daily: "günlük",
+  monthly: "aylık",
+  job: "iş başı",
+};
+const DAYS_ORDER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+const NEG = "Detaylar konuşulur";
 
 function ListingDetail() {
   const { id } = Route.useParams();
@@ -61,7 +100,7 @@ function ListingDetail() {
     queryFn: async () => {
       const { data: listing, error } = await supabase
         .from("listings")
-        .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count")
+        .select("id,user_id,title,description,type,category,city,district,price,price_type,created_at,view_count,work_type,available_days,off_days,available_hours,salary_min,salary_max,salary_period,experience_years,education_level,requirements,benefits,is_remote,is_urgent")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -71,7 +110,7 @@ function ListingDetail() {
         .select("full_name,avatar_url,is_verified,city,district")
         .eq("id", listing.user_id)
         .maybeSingle();
-      return { listing: listing as Listing, profile: (profile ?? null) as Profile | null };
+      return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
     },
   });
 
@@ -192,6 +231,99 @@ function ListingDetail() {
                 <h2 className="font-semibold mb-2">Açıklama</h2>
                 <p className="whitespace-pre-wrap text-foreground/90 leading-relaxed">{listing.description}</p>
               </div>
+
+              {/* Çalışma Koşulları */}
+              <div className="mt-6">
+                <h2 className="font-semibold mb-3">Çalışma Koşulları</h2>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <InfoBox label="Çalışma Tipi" value={listing.work_type ? WORK_TYPE_LABEL[listing.work_type] ?? listing.work_type : NEG} />
+                  <InfoBox
+                    label="Maaş / Ücret"
+                    value={
+                      listing.salary_min || listing.salary_max
+                        ? `${listing.salary_min ? "₺" + listing.salary_min.toLocaleString("tr-TR") : ""}${listing.salary_min && listing.salary_max ? " - " : ""}${listing.salary_max ? "₺" + listing.salary_max.toLocaleString("tr-TR") : ""} ${SALARY_PERIOD_LABEL[listing.salary_period ?? "monthly"] ?? ""}`.trim()
+                        : NEG
+                    }
+                  />
+                  <InfoBox
+                    label="Çalışma Saatleri"
+                    value={
+                      listing.available_hours?.start || listing.available_hours?.end
+                        ? `${listing.available_hours?.start ?? "?"} - ${listing.available_hours?.end ?? "?"}`
+                        : NEG
+                    }
+                  />
+                  <InfoBox
+                    label="Deneyim"
+                    value={listing.experience_years != null ? `${listing.experience_years} yıl` : NEG}
+                  />
+                  <InfoBox label="Eğitim" value={listing.education_level ? EDU_LABEL[listing.education_level] ?? listing.education_level : NEG} />
+                  <InfoBox
+                    label="Uzaktan / Acil"
+                    value={
+                      [listing.is_remote ? "Uzaktan çalışılabilir" : null, listing.is_urgent ? "Acil" : null]
+                        .filter(Boolean)
+                        .join(" • ") || NEG
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Günler */}
+              {(listing.available_days?.length || listing.off_days?.length) ? (
+                <div className="mt-6">
+                  <h2 className="font-semibold mb-2">Çalışma / İzin Günleri</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {DAYS_ORDER.map((d) => {
+                      const isWork = listing.available_days?.includes(d);
+                      const isOff = listing.off_days?.includes(d);
+                      const cls = isWork
+                        ? "bg-brand text-brand-foreground border-brand"
+                        : isOff
+                        ? "bg-emerald-500 text-white border-emerald-500"
+                        : "border-border text-muted-foreground";
+                      return (
+                        <span key={d} className={`px-3 py-1.5 rounded-full text-sm border ${cls}`}>
+                          {d}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5"><span className="size-3 rounded-full bg-brand" /> Çalışma günü</span>
+                    <span className="inline-flex items-center gap-1.5"><span className="size-3 rounded-full bg-emerald-500" /> İzinli gün</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-6">
+                  <h2 className="font-semibold mb-2">Çalışma / İzin Günleri</h2>
+                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                </div>
+              )}
+
+              {/* Şartlar */}
+              <div className="mt-6">
+                <h2 className="font-semibold mb-2">Aranan Nitelikler / Şartlar</h2>
+                {listing.requirements?.length ? (
+                  <ul className="list-disc pl-5 space-y-1 text-foreground/90">
+                    {listing.requirements.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                )}
+              </div>
+
+              {/* Yan Haklar */}
+              <div className="mt-6">
+                <h2 className="font-semibold mb-2">Yan Haklar</h2>
+                {listing.benefits?.length ? (
+                  <ul className="list-disc pl-5 space-y-1 text-foreground/90">
+                    {listing.benefits.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">{NEG}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -256,6 +388,16 @@ function ListingDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function InfoBox({ label, value }: { label: string; value: string }) {
+  const isNeg = value === NEG || !value;
+  return (
+    <div className="rounded-lg border border-border bg-background/50 p-3">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className={`font-medium mt-1 ${isNeg ? "text-muted-foreground italic" : ""}`}>{value || NEG}</div>
     </div>
   );
 }

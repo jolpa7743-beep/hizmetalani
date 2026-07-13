@@ -143,6 +143,7 @@ export type Database = {
           is_urgent: boolean
           meta_description: string | null
           meta_title: string | null
+          off_days: string[] | null
           price: number | null
           price_type: Database["public"]["Enums"]["price_type"]
           requirements: string[] | null
@@ -175,6 +176,7 @@ export type Database = {
           is_urgent?: boolean
           meta_description?: string | null
           meta_title?: string | null
+          off_days?: string[] | null
           price?: number | null
           price_type?: Database["public"]["Enums"]["price_type"]
           requirements?: string[] | null
@@ -207,6 +209,7 @@ export type Database = {
           is_urgent?: boolean
           meta_description?: string | null
           meta_title?: string | null
+          off_days?: string[] | null
           price?: number | null
           price_type?: Database["public"]["Enums"]["price_type"]
           requirements?: string[] | null
