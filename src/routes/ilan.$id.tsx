@@ -128,6 +128,9 @@ function ListingDetail() {
                 <span className="inline-flex items-center gap-1">
                   <Clock className="size-4" /> {new Date(data.created_at).toLocaleDateString("tr-TR")}
                 </span>
+                <span className="inline-flex items-center gap-1">
+                  <Eye className="size-4" /> {data.view_count} görüntülenme
+                </span>
               </div>
               <div className="mt-4 text-3xl font-bold text-brand">
                 {formatPrice(data.price, data.price_type)}
