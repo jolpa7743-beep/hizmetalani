@@ -438,7 +438,7 @@ function ListingDetail() {
                 <div className="font-medium truncate flex items-center gap-1">
                   {profile?.full_name ?? "İlan Sahibi"}
                   {profile?.is_verified && (
-                    <ShieldCheck className="size-4 text-brand" aria-label="Doğrulanmış" />
+                    <ShieldCheck className="size-4 text-emerald-600" aria-label="Doğrulanmış üye" />
                   )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
@@ -447,6 +447,17 @@ function ListingDetail() {
                 </div>
               </div>
             </div>
+            {profile?.is_verified && (
+              <div className="mt-3 flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <BadgeCheck className="size-3.5" /> Bu üyeye güven rozeti verilmiştir
+              </div>
+            )}
+            {profile?.created_at && (
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <CalendarDays className="size-3.5" />
+                Üyelik: {new Date(profile.created_at).toLocaleDateString("tr-TR", { year: "numeric", month: "long" })}
+              </div>
+            )}
             {!isOwner ? (
               <Button
                 onClick={contactSeller}
