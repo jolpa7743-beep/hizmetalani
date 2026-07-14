@@ -76,6 +76,14 @@ export function ListingCard({
           )}
         </div>
 
+        {ownerRating && ownerRating.count > 0 && (
+          <div className="mt-1.5 inline-flex items-center gap-1 text-xs">
+            <Star className="size-3 fill-amber-400 text-amber-400" />
+            <span className="font-semibold tabular-nums">{ownerRating.avg.toFixed(1)}</span>
+            <span className="text-muted-foreground">({ownerRating.count})</span>
+          </div>
+        )}
+
         <div className="mt-3 flex items-end justify-between gap-2 pt-2 border-t border-border">
           <div className="text-brand font-bold text-[15px] tabular-nums">
             {formatPrice(item.price, item.price_type)}
