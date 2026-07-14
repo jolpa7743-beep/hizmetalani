@@ -26,7 +26,6 @@ function shortDate(iso: string) {
 
 export function ListingCard({ item }: { item: ListingRow & { is_urgent?: boolean; is_featured?: boolean } }) {
   const cat = CATEGORY_MAP[item.category];
-  const Icon = cat?.icon;
   const isOffering = item.type === "offering";
   return (
     <Link
@@ -35,48 +34,39 @@ export function ListingCard({ item }: { item: ListingRow & { is_urgent?: boolean
       aria-label={`${item.title} — ${item.city}${item.district ? ` / ${item.district}` : ""}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-elevated)] focus-visible:-translate-y-0.5"
     >
-      <div
-        className="relative h-32 grid place-items-center bg-gradient-to-br from-brand/10 via-brand-soft to-brand-accent/15"
-        aria-hidden
-      >
-        {Icon ? <Icon className="size-12 text-brand/70" strokeWidth={1.5} /> : null}
-        <span
-          className={
-            "absolute left-2 top-2 inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide " +
-            (isOffering ? "bg-brand text-brand-foreground" : "bg-success/90 text-success-foreground")
-          }
-        >
-          {TYPE_LABEL[item.type]}
-        </span>
-        <div className="absolute right-2 top-2 flex items-center gap-1">
+      {/* İçerik */}
+      <div className="flex flex-1 flex-col p-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span
+            className={
+              "inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide " +
+              (isOffering ? "bg-brand text-brand-foreground" : "bg-success/90 text-success-foreground")
+            }
+          >
+            {TYPE_LABEL[item.type]}
+          </span>
           {item.is_featured && (
             <span className="inline-flex items-center gap-1 rounded-sm bg-amber-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-              <Star className="size-3" /> Öne Çıkan
+              Öne Çıkan
             </span>
           )}
           {item.is_urgent && (
             <span className="inline-flex items-center gap-1 rounded-sm bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-              <Zap className="size-3" /> Acil
+              Acil
             </span>
           )}
-          {typeof item.view_count === "number" && item.view_count > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-sm bg-foreground/60 px-1.5 py-0.5 text-[10px] font-medium text-background">
-              <Eye className="size-3" /> {item.view_count}
-            </span>
-          )}
+          <span className="ml-auto text-[11px] text-muted-foreground">{cat?.short}</span>
         </div>
-      </div>
 
-      {/* İçerik */}
-      <div className="flex flex-1 flex-col p-3">
-        <div className="text-[11px] text-muted-foreground">{cat?.short}</div>
-        <h3 className="mt-0.5 font-semibold text-[15px] text-foreground leading-snug line-clamp-2 group-hover:text-brand">
+        <h3 className="mt-2 font-semibold text-[15px] text-foreground leading-snug line-clamp-2 group-hover:text-brand">
           {item.title}
         </h3>
 
-        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground min-w-0">
-          <MapPin className="size-3.5 shrink-0" aria-hidden />
+        <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground min-w-0">
           <span className="truncate">{item.city}{item.district ? ` / ${item.district}` : ""}</span>
+          {typeof item.view_count === "number" && item.view_count > 0 && (
+            <span className="tabular-nums">{item.view_count} görüntülenme</span>
+          )}
         </div>
 
         <div className="mt-3 flex items-end justify-between gap-2 pt-2 border-t border-border">
