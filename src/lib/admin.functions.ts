@@ -84,6 +84,7 @@ export const adminListUsers = createServerFn({ method: "GET" })
       district: string | null;
       phone: string | null;
       is_verified: boolean;
+      trust_level: number;
       roles: string[];
     }>;
   });
