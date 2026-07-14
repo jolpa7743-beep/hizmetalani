@@ -95,7 +95,7 @@ export const adminListReviews = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { status?: string | null } = {}) => d)
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase.rpc("admin_list_reviews" as never, {
+    const { data: rows, error } = await (context.supabase.rpc as any)("admin_list_reviews", {
       _status: data.status ?? null,
     });
     if (error) throw new Error(error.message);
@@ -110,7 +110,7 @@ export const adminSetReviewStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { reviewId: string; status: "pending" | "approved" | "rejected"; note?: string }) => d)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("admin_set_review_status" as never, {
+    const { error } = await (context.supabase.rpc as any)("admin_set_review_status", {
       _review_id: data.reviewId,
       _status: data.status,
       _note: data.note ?? null,
@@ -122,7 +122,7 @@ export const adminSetReviewStatus = createServerFn({ method: "POST" })
 export const adminListReviewReports = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.rpc("admin_list_review_reports" as never);
+    const { data, error } = await (context.supabase.rpc as any)("admin_list_review_reports");
     if (error) throw new Error(error.message);
     return (data ?? []) as Array<{
       id: string; reason: string; status: string; created_at: string;
@@ -136,7 +136,7 @@ export const adminSetReportStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { reportId: string; status: "open" | "resolved" | "dismissed" }) => d)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("admin_set_report_status" as never, {
+    const { error } = await (context.supabase.rpc as any)("admin_set_report_status", {
       _report_id: data.reportId,
       _status: data.status,
     });
@@ -149,7 +149,7 @@ export const adminSetVerified = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { userId: string; verified: boolean }) => d)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("admin_set_verified" as never, {
+    const { error } = await (context.supabase.rpc as any)("admin_set_verified", {
       _user_id: data.userId,
       _verified: data.verified,
     });
