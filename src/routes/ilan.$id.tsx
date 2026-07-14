@@ -479,7 +479,17 @@ function ListingDetail() {
         </div>
       </div>
 
+      <div className="mt-8">
+        <UserReviews
+          userId={listing.user_id}
+          ownerName={profile?.full_name ?? "İlan Sahibi"}
+          listingId={listing.id}
+        />
+      </div>
+
       <AdSlot slot="in_article" layout="in-article" format="fluid" className="mt-8" />
+
+
 
 
 
