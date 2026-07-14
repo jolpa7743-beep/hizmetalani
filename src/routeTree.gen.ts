@@ -36,6 +36,7 @@ import { Route as AuthenticatedAdminYorumlarRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminYayinRouteImport } from './routes/_authenticated.admin.yayin'
 import { Route as AuthenticatedAdminTicketlarRouteImport } from './routes/_authenticated.admin.ticketlar'
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated.admin.seo'
+import { Route as AuthenticatedAdminRaporlarRouteImport } from './routes/_authenticated.admin.raporlar'
 import { Route as AuthenticatedAdminLoglarRouteImport } from './routes/_authenticated.admin.loglar'
 import { Route as AuthenticatedAdminKullanicilarRouteImport } from './routes/_authenticated.admin.kullanicilar'
 import { Route as AuthenticatedAdminIlanlarRouteImport } from './routes/_authenticated.admin.ilanlar'
@@ -178,6 +179,12 @@ const AuthenticatedAdminSeoRoute = AuthenticatedAdminSeoRouteImport.update({
   path: '/seo',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminRaporlarRoute =
+  AuthenticatedAdminRaporlarRouteImport.update({
+    id: '/raporlar',
+    path: '/raporlar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminLoglarRoute =
   AuthenticatedAdminLoglarRouteImport.update({
     id: '/loglar',
@@ -227,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
   '/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
   '/admin/loglar': typeof AuthenticatedAdminLoglarRoute
+  '/admin/raporlar': typeof AuthenticatedAdminRaporlarRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/admin/ticketlar': typeof AuthenticatedAdminTicketlarRoute
   '/admin/yayin': typeof AuthenticatedAdminYayinRoute
@@ -258,6 +266,7 @@ export interface FileRoutesByTo {
   '/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
   '/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
   '/admin/loglar': typeof AuthenticatedAdminLoglarRoute
+  '/admin/raporlar': typeof AuthenticatedAdminRaporlarRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/admin/ticketlar': typeof AuthenticatedAdminTicketlarRoute
   '/admin/yayin': typeof AuthenticatedAdminYayinRoute
@@ -292,6 +301,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
   '/_authenticated/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
   '/_authenticated/admin/loglar': typeof AuthenticatedAdminLoglarRoute
+  '/_authenticated/admin/raporlar': typeof AuthenticatedAdminRaporlarRoute
   '/_authenticated/admin/seo': typeof AuthenticatedAdminSeoRoute
   '/_authenticated/admin/ticketlar': typeof AuthenticatedAdminTicketlarRoute
   '/_authenticated/admin/yayin': typeof AuthenticatedAdminYayinRoute
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
     | '/admin/ilanlar'
     | '/admin/kullanicilar'
     | '/admin/loglar'
+    | '/admin/raporlar'
     | '/admin/seo'
     | '/admin/ticketlar'
     | '/admin/yayin'
@@ -357,6 +368,7 @@ export interface FileRouteTypes {
     | '/admin/ilanlar'
     | '/admin/kullanicilar'
     | '/admin/loglar'
+    | '/admin/raporlar'
     | '/admin/seo'
     | '/admin/ticketlar'
     | '/admin/yayin'
@@ -390,6 +402,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/ilanlar'
     | '/_authenticated/admin/kullanicilar'
     | '/_authenticated/admin/loglar'
+    | '/_authenticated/admin/raporlar'
     | '/_authenticated/admin/seo'
     | '/_authenticated/admin/ticketlar'
     | '/_authenticated/admin/yayin'
@@ -608,6 +621,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSeoRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/raporlar': {
+      id: '/_authenticated/admin/raporlar'
+      path: '/raporlar'
+      fullPath: '/admin/raporlar'
+      preLoaderRoute: typeof AuthenticatedAdminRaporlarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/loglar': {
       id: '/_authenticated/admin/loglar'
       path: '/loglar'
@@ -644,6 +664,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIlanlarRoute: typeof AuthenticatedAdminIlanlarRoute
   AuthenticatedAdminKullanicilarRoute: typeof AuthenticatedAdminKullanicilarRoute
   AuthenticatedAdminLoglarRoute: typeof AuthenticatedAdminLoglarRoute
+  AuthenticatedAdminRaporlarRoute: typeof AuthenticatedAdminRaporlarRoute
   AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
   AuthenticatedAdminTicketlarRoute: typeof AuthenticatedAdminTicketlarRoute
   AuthenticatedAdminYayinRoute: typeof AuthenticatedAdminYayinRoute
@@ -656,6 +677,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIlanlarRoute: AuthenticatedAdminIlanlarRoute,
   AuthenticatedAdminKullanicilarRoute: AuthenticatedAdminKullanicilarRoute,
   AuthenticatedAdminLoglarRoute: AuthenticatedAdminLoglarRoute,
+  AuthenticatedAdminRaporlarRoute: AuthenticatedAdminRaporlarRoute,
   AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,
   AuthenticatedAdminTicketlarRoute: AuthenticatedAdminTicketlarRoute,
   AuthenticatedAdminYayinRoute: AuthenticatedAdminYayinRoute,
