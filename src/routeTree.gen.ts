@@ -20,6 +20,7 @@ import { Route as GuvenlikRouteImport } from './routes/guvenlik'
 import { Route as GizlilikRouteImport } from './routes/gizlilik'
 import { Route as CerezPolitikasiRouteImport } from './routes/cerez-politikasi'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as IlanIdRouteImport } from './routes/ilan.$id'
@@ -92,6 +93,11 @@ const CerezPolitikasiRoute = CerezPolitikasiRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdsDottxtRoute = AdsDottxtRouteImport.update({
+  id: '/ads.txt',
+  path: '/ads.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -192,6 +198,7 @@ const AuthenticatedAdminDuyurularRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ads.txt': typeof AdsDottxtRoute
   '/auth': typeof AuthRoute
   '/cerez-politikasi': typeof CerezPolitikasiRoute
   '/gizlilik': typeof GizlilikRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ads.txt': typeof AdsDottxtRoute
   '/auth': typeof AuthRoute
   '/cerez-politikasi': typeof CerezPolitikasiRoute
   '/gizlilik': typeof GizlilikRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/ads.txt': typeof AdsDottxtRoute
   '/auth': typeof AuthRoute
   '/cerez-politikasi': typeof CerezPolitikasiRoute
   '/gizlilik': typeof GizlilikRoute
@@ -285,6 +294,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ads.txt'
     | '/auth'
     | '/cerez-politikasi'
     | '/gizlilik'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ads.txt'
     | '/auth'
     | '/cerez-politikasi'
     | '/gizlilik'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/ads.txt'
     | '/auth'
     | '/cerez-politikasi'
     | '/gizlilik'
@@ -377,6 +389,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AdsDottxtRoute: typeof AdsDottxtRoute
   AuthRoute: typeof AuthRoute
   CerezPolitikasiRoute: typeof CerezPolitikasiRoute
   GizlilikRoute: typeof GizlilikRoute
@@ -468,6 +481,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ads.txt': {
+      id: '/ads.txt'
+      path: '/ads.txt'
+      fullPath: '/ads.txt'
+      preLoaderRoute: typeof AdsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -651,6 +671,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AdsDottxtRoute: AdsDottxtRoute,
   AuthRoute: AuthRoute,
   CerezPolitikasiRoute: CerezPolitikasiRoute,
   GizlilikRoute: GizlilikRoute,
@@ -667,3 +688,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
