@@ -33,7 +33,10 @@ function AdminUsers() {
   const deleteUser = useServerFn(adminDeleteUser);
   const setTrust = useServerFn(adminSetTrustLevel);
   const qc = useQueryClient();
-  const [q, setQ] = useState("");
+  const search = Route.useSearch();
+  const [q, setQ] = useState(search.q ?? "");
+
+  useEffect(() => { if (search.q) setQ(search.q); }, [search.q]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users"],
