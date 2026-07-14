@@ -213,6 +213,13 @@ function ListingDetail() {
   const [authDialog, setAuthDialog] = useState(false);
 
   const { data, isLoading, error } = useQuery(listingQueryOptions(id));
+  const fetchSettings = useServerFn(getSiteSettings);
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings-public"],
+    queryFn: () => fetchSettings(),
+    staleTime: 5 * 60_000,
+  });
+  const badgeVisibility: BadgeVisibility = (settings?.trust_badge_visibility as BadgeVisibility | undefined) ?? "all";
 
   useEffect(() => {
     supabase.rpc("increment_listing_view", { _id: id }).then(() => {});
