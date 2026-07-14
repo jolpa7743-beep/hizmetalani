@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { z } from "zod";
 import { Search, X, SlidersHorizontal, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ListingCard, type ListingRow } from "@/components/ListingCard";
+import { AdSlot } from "@/components/AdSlot";
 import { CATEGORIES, type CategoryKey } from "@/lib/categories";
 import { ILLER, getIlceler } from "@/lib/turkiye";
 import { Input } from "@/components/ui/input";
@@ -239,8 +240,19 @@ function HomePage() {
                   </div>
                 </div>
               )}
-              {listings?.map((item) => <ListingCard key={item.id} item={item} />)}
+              {listings?.map((item, i) => (
+                <Fragment key={item.id}>
+                  <ListingCard item={item} />
+                  {i === 5 && (
+                    <div className="col-span-full">
+                      <AdSlot slot="sidebar" />
+                    </div>
+                  )}
+                </Fragment>
+              ))}
             </section>
+
+            <AdSlot slot="footer" className="mt-8" />
           </div>
         </div>
       </div>

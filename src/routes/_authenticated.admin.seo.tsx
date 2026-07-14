@@ -73,7 +73,25 @@ function AdminSEO() {
           <div><Label>Google Analytics ID</Label><Input value={form.ga_measurement_id ?? ""} onChange={(e) => set("ga_measurement_id", e.target.value)} placeholder="G-XXXXXXXXXX" /></div>
           <div><Label>Google Search Console Doğrulama Kodu</Label><Input value={form.search_console_verification ?? ""} onChange={(e) => set("search_console_verification", e.target.value)} placeholder="content değeri" />
             <p className="text-xs text-muted-foreground mt-1">HTML meta tag doğrulama değeri (google-site-verification content=".." kısmı).</p></div>
-          <div><Label>Google AdSense Publisher ID</Label><Input value={form.adsense_publisher_id ?? ""} onChange={(e) => set("adsense_publisher_id", e.target.value)} placeholder="ca-pub-XXXXXXXXXXXXXXXX" /></div>
+
+          <div className="pt-4 border-t space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <Label htmlFor="ads-enabled" className="text-base">Google AdSense Reklamları</Label>
+                <p className="text-xs text-muted-foreground mt-1">Tüm sayfalardaki reklam bloklarını açıp kapatır. Kapalıyken hiç <code>&lt;ins&gt;</code> etiketi ve AdSense scripti yüklenmez.</p>
+              </div>
+              <Switch id="ads-enabled" checked={form.adsense_enabled ?? false} onCheckedChange={(v) => set("adsense_enabled", v)} />
+            </div>
+            <div><Label>Publisher ID</Label><Input value={form.adsense_publisher_id ?? ""} onChange={(e) => set("adsense_publisher_id", e.target.value)} placeholder="ca-pub-XXXXXXXXXXXXXXXX" />
+              <p className="text-xs text-muted-foreground mt-1"><code>ca-pub-</code> ön ekiyle birlikte yazın. Bu değer aynı zamanda <code>/ads.txt</code> dosyasında da otomatik yayınlanır.</p></div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div><Label>Slot: Header (üst şerit)</Label><Input value={form.adsense_slot_header ?? ""} onChange={(e) => set("adsense_slot_header", e.target.value)} placeholder="1234567890" /></div>
+              <div><Label>Slot: In-Article (içerik içi)</Label><Input value={form.adsense_slot_in_article ?? ""} onChange={(e) => set("adsense_slot_in_article", e.target.value)} placeholder="1234567890" /></div>
+              <div><Label>Slot: Sidebar (kenar / liste arası)</Label><Input value={form.adsense_slot_sidebar ?? ""} onChange={(e) => set("adsense_slot_sidebar", e.target.value)} placeholder="1234567890" /></div>
+              <div><Label>Slot: Footer (alt)</Label><Input value={form.adsense_slot_footer ?? ""} onChange={(e) => set("adsense_slot_footer", e.target.value)} placeholder="1234567890" /></div>
+            </div>
+            <p className="text-xs text-muted-foreground">Slot ID'leri AdSense &gt; Reklamlar &gt; Reklam birimleri sayfasından alınır. Sadece rakamdan oluşur. Bir slotu boş bırakırsanız o konumdaki reklam gizlenir.</p>
+          </div>
         </CardContent>
       </Card>
 

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Building2, User as UserIcon, ShieldAlert, Search } from "lucide-react";
 import { toast } from "sonner";
+import { AdSlot } from "@/components/AdSlot";
 
 // Loader ile ilan verisini önden çekip head() içinde title/description/OG üretiyoruz.
 const listingQueryOptions = (id: string) => ({
@@ -467,6 +468,11 @@ function ListingDetail() {
           </div>
         </div>
       </div>
+
+      <AdSlot slot="in_article" layout="in-article" format="fluid" className="mt-8" />
+
+
+
 
       <AlertDialog open={authDialog} onOpenChange={setAuthDialog}>
         <AlertDialogContent>
