@@ -9,8 +9,8 @@ export function AppFooter() {
         <div className="col-span-2">
           <BrandLogo />
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground max-w-xs">
-            Türkiye'nin ev ve bakım hizmetleri ilan platformu. Bakıcı, temizlikçi ve evcil hayvan
-            geçici yuva ilanlarını güvenle bulun ya da yayınlayın.
+            Türkiye'nin ev ve bakım hizmetleri ilan platformu. Bakıcı, temizlik personeli ve evcil hayvan
+            geçici konaklama ilanlarını güvenle bulun ya da yayınlayın.
           </p>
           <div className="mt-4 flex items-center gap-1">
             <FooterIcon href="#" label="Twitter"><Twitter className="size-5" aria-hidden /></FooterIcon>
