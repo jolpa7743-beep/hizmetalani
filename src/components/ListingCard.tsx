@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { Star } from "lucide-react";
 import { CATEGORY_MAP, TYPE_LABEL, formatPrice, type CategoryKey, type ListingType } from "@/lib/categories";
 
 export type ListingRow = {
   id: string;
+  user_id?: string;
   title: string;
   type: ListingType;
   category: CategoryKey;
