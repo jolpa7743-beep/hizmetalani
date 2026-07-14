@@ -25,6 +25,7 @@ function AdminLayout() {
     { to: "/admin/ticketlar", label: "Destek Talepleri", icon: MessageCircle },
     { to: "/admin/duyurular", label: "Duyurular", icon: Megaphone },
     { to: "/admin/yayin", label: "Toplu DM", icon: Send },
+    { to: "/admin/rozetler", label: "Rozet Ayarları", icon: ShieldCheck },
     { to: "/admin/seo", label: "SEO Ayarları", icon: Search },
     { to: "/admin/loglar", label: "Loglar", icon: ScrollText },
   ];
