@@ -241,14 +241,14 @@ function HomePage() {
                 </div>
               )}
               {listings?.map((item, i) => (
-                <>
-                  <ListingCard key={item.id} item={item} />
+                <React.Fragment key={item.id}>
+                  <ListingCard item={item} />
                   {i === 5 && (
-                    <div key="ad-inline" className="col-span-full">
+                    <div className="col-span-full">
                       <AdSlot slot="sidebar" />
                     </div>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </section>
 
