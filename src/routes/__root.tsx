@@ -208,6 +208,7 @@ function RootComponent() {
         </main>
         <AppFooter />
       </div>
+      <CookieConsent />
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
