@@ -51,7 +51,7 @@ export function UserReviews({
   const [submitting, setSubmitting] = useState(false);
 
   const canWrite = user && user.id !== userId;
-  const alreadyReviewed = data?.reviews.some((r) => r.reviewer_id === user?.id);
+  const alreadyReviewed = data?.reviews.some((r: { reviewer_id: string }) => r.reviewer_id === user?.id);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -137,7 +137,7 @@ export function UserReviews({
         {!isLoading && data?.reviews.length === 0 && (
           <p className="text-sm text-muted-foreground italic">Henüz onaylanmış yorum yok.</p>
         )}
-        {data?.reviews.map((r) => (
+        {data?.reviews.map((r: { id: string; reviewer_id: string; rating: number; comment: string; created_at: string; reviewer_name: string }) => (
           <div key={r.id} className="border rounded-lg p-3">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-2">
