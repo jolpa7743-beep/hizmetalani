@@ -33,7 +33,8 @@ export const getUserReviews = createServerFn({ method: "GET" })
         .limit(50),
       (supabase as any).rpc("user_review_stats", { _user_id: data.userId }),
     ]);
-    const reviewerIds = Array.from(new Set((rows ?? []).map((r: any) => ({ any) => r.reviewer_id)));
+    const rowsArr = (rows ?? []) as Array<{ id: string; reviewer_id: string; rating: number; comment: string; created_at: string }>;
+    const reviewerIds = Array.from(new Set(rowsArr.map((r) => r.reviewer_id)));
     let names: Record<string, string> = {};
     if (reviewerIds.length) {
       const { data: profs } = await supabase
@@ -42,7 +43,7 @@ export const getUserReviews = createServerFn({ method: "GET" })
         .in("id", reviewerIds);
       names = Object.fromEntries((profs ?? []).map((p) => [p.id, p.full_name ?? "Üye"]));
     }
-    const reviews = (rows ?? []).map((r: any) => ({ any) => ({
+    const reviews = rowsArr.map((r) => ({
       ...r,
       reviewer_name: names[r.reviewer_id] ?? "Üye",
     }));
