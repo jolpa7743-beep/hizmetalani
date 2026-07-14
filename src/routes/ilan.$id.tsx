@@ -35,7 +35,7 @@ const listingQueryOptions = (id: string) => ({
     if (!listing) return null;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name,avatar_url,is_verified,city,district")
+      .select("full_name,avatar_url,is_verified,city,district,created_at")
       .eq("id", listing.user_id)
       .maybeSingle();
     return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
