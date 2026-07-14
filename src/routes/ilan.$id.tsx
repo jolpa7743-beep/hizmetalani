@@ -21,6 +21,8 @@ import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Buildin
 import { toast } from "sonner";
 import { AdSlot } from "@/components/AdSlot";
 import { UserReviews } from "@/components/UserReviews";
+import { getSiteSettings } from "@/lib/settings.functions";
+import { shouldShowBadge, trustBadgeMeta, type BadgeVisibility } from "@/lib/trust";
 
 // Loader ile ilan verisini önden çekip head() içinde title/description/OG üretiyoruz.
 const listingQueryOptions = (id: string) => ({
@@ -35,7 +37,7 @@ const listingQueryOptions = (id: string) => ({
     if (!listing) return null;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name,avatar_url,is_verified,city,district,created_at")
+      .select("full_name,avatar_url,is_verified,trust_level,city,district,created_at")
       .eq("id", listing.user_id)
       .maybeSingle();
     return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
