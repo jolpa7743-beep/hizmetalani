@@ -15,6 +15,11 @@ export type SiteSettings = {
   contact_phone: string | null;
   announcement_banner: string | null;
   announcement_active: boolean;
+  adsense_enabled: boolean;
+  adsense_slot_header: string | null;
+  adsense_slot_in_article: string | null;
+  adsense_slot_sidebar: string | null;
+  adsense_slot_footer: string | null;
   updated_at: string;
 };
 
