@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageSquare } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/mesajlar")({
+export const Route = createFileRoute("/_authenticated/mesajlar/")({
   component: Conversations,
   head: () => ({ meta: [{ title: "Mesajlarım — hizmetalanı.com" }] }),
 });
