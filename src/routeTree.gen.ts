@@ -20,15 +20,16 @@ import { Route as GuvenlikRouteImport } from './routes/guvenlik'
 import { Route as GizlilikRouteImport } from './routes/gizlilik'
 import { Route as CerezPolitikasiRouteImport } from './routes/cerez-politikasi'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as IlanIdRouteImport } from './routes/ilan.$id'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated.profil'
-import { Route as AuthenticatedMesajlarRouteImport } from './routes/_authenticated.mesajlar'
 import { Route as AuthenticatedIlanlarimRouteImport } from './routes/_authenticated.ilanlarim'
 import { Route as AuthenticatedIlanVerRouteImport } from './routes/_authenticated.ilan-ver'
 import { Route as AuthenticatedDestekRouteImport } from './routes/_authenticated.destek'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as AuthenticatedMesajlarIndexRouteImport } from './routes/_authenticated.mesajlar.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
 import { Route as AuthenticatedMesajlarIdRouteImport } from './routes/_authenticated.mesajlar.$id'
 import { Route as AuthenticatedAdminYayinRouteImport } from './routes/_authenticated.admin.yayin'
@@ -94,6 +95,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdsDottxtRoute = AdsDottxtRouteImport.update({
+  id: '/ads.txt',
+  path: '/ads.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -111,11 +117,6 @@ const IlanIdRoute = IlanIdRouteImport.update({
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedMesajlarRoute = AuthenticatedMesajlarRouteImport.update({
-  id: '/mesajlar',
-  path: '/mesajlar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedIlanlarimRoute = AuthenticatedIlanlarimRouteImport.update({
@@ -138,15 +139,21 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMesajlarIndexRoute =
+  AuthenticatedMesajlarIndexRouteImport.update({
+    id: '/mesajlar/',
+    path: '/mesajlar/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedMesajlarIdRoute = AuthenticatedMesajlarIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AuthenticatedMesajlarRoute,
+  id: '/mesajlar/$id',
+  path: '/mesajlar/$id',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminYayinRoute = AuthenticatedAdminYayinRouteImport.update({
   id: '/yayin',
@@ -191,6 +198,7 @@ const AuthenticatedAdminDuyurularRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ads.txt': typeof AdsDottxtRoute
   '/auth': typeof AuthRoute
   '/cerez-politikasi': typeof CerezPolitikasiRoute
   '/gizlilik': typeof GizlilikRoute
@@ -206,7 +214,6 @@ export interface FileRoutesByFullPath {
   '/destek': typeof AuthenticatedDestekRoute
   '/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
-  '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
   '/admin/duyurular': typeof AuthenticatedAdminDuyurularRoute
@@ -218,9 +225,11 @@ export interface FileRoutesByFullPath {
   '/admin/yayin': typeof AuthenticatedAdminYayinRoute
   '/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/mesajlar/': typeof AuthenticatedMesajlarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ads.txt': typeof AdsDottxtRoute
   '/auth': typeof AuthRoute
   '/cerez-politikasi': typeof CerezPolitikasiRoute
   '/gizlilik': typeof GizlilikRoute
@@ -235,7 +244,6 @@ export interface FileRoutesByTo {
   '/destek': typeof AuthenticatedDestekRoute
   '/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
-  '/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
   '/admin/duyurular': typeof AuthenticatedAdminDuyurularRoute
@@ -247,11 +255,13 @@ export interface FileRoutesByTo {
   '/admin/yayin': typeof AuthenticatedAdminYayinRoute
   '/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/mesajlar': typeof AuthenticatedMesajlarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/ads.txt': typeof AdsDottxtRoute
   '/auth': typeof AuthRoute
   '/cerez-politikasi': typeof CerezPolitikasiRoute
   '/gizlilik': typeof GizlilikRoute
@@ -267,7 +277,6 @@ export interface FileRoutesById {
   '/_authenticated/destek': typeof AuthenticatedDestekRoute
   '/_authenticated/ilan-ver': typeof AuthenticatedIlanVerRoute
   '/_authenticated/ilanlarim': typeof AuthenticatedIlanlarimRoute
-  '/_authenticated/mesajlar': typeof AuthenticatedMesajlarRouteWithChildren
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
   '/_authenticated/admin/duyurular': typeof AuthenticatedAdminDuyurularRoute
@@ -279,11 +288,13 @@ export interface FileRoutesById {
   '/_authenticated/admin/yayin': typeof AuthenticatedAdminYayinRoute
   '/_authenticated/mesajlar/$id': typeof AuthenticatedMesajlarIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/mesajlar/': typeof AuthenticatedMesajlarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ads.txt'
     | '/auth'
     | '/cerez-politikasi'
     | '/gizlilik'
@@ -299,7 +310,6 @@ export interface FileRouteTypes {
     | '/destek'
     | '/ilan-ver'
     | '/ilanlarim'
-    | '/mesajlar'
     | '/profil'
     | '/ilan/$id'
     | '/admin/duyurular'
@@ -311,9 +321,11 @@ export interface FileRouteTypes {
     | '/admin/yayin'
     | '/mesajlar/$id'
     | '/admin/'
+    | '/mesajlar/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ads.txt'
     | '/auth'
     | '/cerez-politikasi'
     | '/gizlilik'
@@ -328,7 +340,6 @@ export interface FileRouteTypes {
     | '/destek'
     | '/ilan-ver'
     | '/ilanlarim'
-    | '/mesajlar'
     | '/profil'
     | '/ilan/$id'
     | '/admin/duyurular'
@@ -340,10 +351,12 @@ export interface FileRouteTypes {
     | '/admin/yayin'
     | '/mesajlar/$id'
     | '/admin'
+    | '/mesajlar'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/ads.txt'
     | '/auth'
     | '/cerez-politikasi'
     | '/gizlilik'
@@ -359,7 +372,6 @@ export interface FileRouteTypes {
     | '/_authenticated/destek'
     | '/_authenticated/ilan-ver'
     | '/_authenticated/ilanlarim'
-    | '/_authenticated/mesajlar'
     | '/_authenticated/profil'
     | '/ilan/$id'
     | '/_authenticated/admin/duyurular'
@@ -371,11 +383,13 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/yayin'
     | '/_authenticated/mesajlar/$id'
     | '/_authenticated/admin/'
+    | '/_authenticated/mesajlar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AdsDottxtRoute: typeof AdsDottxtRoute
   AuthRoute: typeof AuthRoute
   CerezPolitikasiRoute: typeof CerezPolitikasiRoute
   GizlilikRoute: typeof GizlilikRoute
@@ -469,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ads.txt': {
+      id: '/ads.txt'
+      path: '/ads.txt'
+      fullPath: '/ads.txt'
+      preLoaderRoute: typeof AdsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -495,13 +516,6 @@ declare module '@tanstack/react-router' {
       path: '/profil'
       fullPath: '/profil'
       preLoaderRoute: typeof AuthenticatedProfilRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/mesajlar': {
-      id: '/_authenticated/mesajlar'
-      path: '/mesajlar'
-      fullPath: '/mesajlar'
-      preLoaderRoute: typeof AuthenticatedMesajlarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/ilanlarim': {
@@ -532,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/mesajlar/': {
+      id: '/_authenticated/mesajlar/'
+      path: '/mesajlar'
+      fullPath: '/mesajlar/'
+      preLoaderRoute: typeof AuthenticatedMesajlarIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -541,10 +562,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/mesajlar/$id': {
       id: '/_authenticated/mesajlar/$id'
-      path: '/$id'
+      path: '/mesajlar/$id'
       fullPath: '/mesajlar/$id'
       preLoaderRoute: typeof AuthenticatedMesajlarIdRouteImport
-      parentRoute: typeof AuthenticatedMesajlarRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/yayin': {
       id: '/_authenticated/admin/yayin'
@@ -623,26 +644,14 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
-interface AuthenticatedMesajlarRouteChildren {
-  AuthenticatedMesajlarIdRoute: typeof AuthenticatedMesajlarIdRoute
-}
-
-const AuthenticatedMesajlarRouteChildren: AuthenticatedMesajlarRouteChildren = {
-  AuthenticatedMesajlarIdRoute: AuthenticatedMesajlarIdRoute,
-}
-
-const AuthenticatedMesajlarRouteWithChildren =
-  AuthenticatedMesajlarRoute._addFileChildren(
-    AuthenticatedMesajlarRouteChildren,
-  )
-
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDestekRoute: typeof AuthenticatedDestekRoute
   AuthenticatedIlanVerRoute: typeof AuthenticatedIlanVerRoute
   AuthenticatedIlanlarimRoute: typeof AuthenticatedIlanlarimRoute
-  AuthenticatedMesajlarRoute: typeof AuthenticatedMesajlarRouteWithChildren
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedMesajlarIdRoute: typeof AuthenticatedMesajlarIdRoute
+  AuthenticatedMesajlarIndexRoute: typeof AuthenticatedMesajlarIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -650,8 +659,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDestekRoute: AuthenticatedDestekRoute,
   AuthenticatedIlanVerRoute: AuthenticatedIlanVerRoute,
   AuthenticatedIlanlarimRoute: AuthenticatedIlanlarimRoute,
-  AuthenticatedMesajlarRoute: AuthenticatedMesajlarRouteWithChildren,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedMesajlarIdRoute: AuthenticatedMesajlarIdRoute,
+  AuthenticatedMesajlarIndexRoute: AuthenticatedMesajlarIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -661,6 +671,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AdsDottxtRoute: AdsDottxtRoute,
   AuthRoute: AuthRoute,
   CerezPolitikasiRoute: CerezPolitikasiRoute,
   GizlilikRoute: GizlilikRoute,

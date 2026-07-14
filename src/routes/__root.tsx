@@ -130,7 +130,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "anonymous" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" },
     ];
 
@@ -150,7 +150,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       scripts.push({ children: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${s.ga_measurement_id}');` });
     }
     if (s?.adsense_publisher_id) {
-      scripts.push({ src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${s.adsense_publisher_id}`, async: true, crossorigin: "anonymous" });
+      scripts.push({ src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${s.adsense_publisher_id}`, async: true, crossOrigin: "anonymous" });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return { meta: meta as any, links: links as any, scripts: scripts as any };
