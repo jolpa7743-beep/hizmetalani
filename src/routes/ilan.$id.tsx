@@ -17,9 +17,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Building2, User as UserIcon, ShieldAlert, Search } from "lucide-react";
+import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Building2, User as UserIcon, ShieldAlert, CalendarDays, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AdSlot } from "@/components/AdSlot";
+import { UserReviews } from "@/components/UserReviews";
 
 // Loader ile ilan verisini önden çekip head() içinde title/description/OG üretiyoruz.
 const listingQueryOptions = (id: string) => ({
@@ -34,7 +35,7 @@ const listingQueryOptions = (id: string) => ({
     if (!listing) return null;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name,avatar_url,is_verified,city,district")
+      .select("full_name,avatar_url,is_verified,city,district,created_at")
       .eq("id", listing.user_id)
       .maybeSingle();
     return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
@@ -162,6 +163,7 @@ type Profile = {
   is_verified: boolean;
   city: string | null;
   district: string | null;
+  created_at: string;
 };
 
 const WORK_TYPE_LABEL: Record<string, string> = {
@@ -436,7 +438,7 @@ function ListingDetail() {
                 <div className="font-medium truncate flex items-center gap-1">
                   {profile?.full_name ?? "İlan Sahibi"}
                   {profile?.is_verified && (
-                    <ShieldCheck className="size-4 text-brand" aria-label="Doğrulanmış" />
+                    <ShieldCheck className="size-4 text-emerald-600" aria-label="Doğrulanmış üye" />
                   )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
@@ -445,6 +447,17 @@ function ListingDetail() {
                 </div>
               </div>
             </div>
+            {profile?.is_verified && (
+              <div className="mt-3 flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <BadgeCheck className="size-3.5" /> Bu üyeye güven rozeti verilmiştir
+              </div>
+            )}
+            {profile?.created_at && (
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <CalendarDays className="size-3.5" />
+                Üyelik: {new Date(profile.created_at).toLocaleDateString("tr-TR", { year: "numeric", month: "long" })}
+              </div>
+            )}
             {!isOwner ? (
               <Button
                 onClick={contactSeller}
@@ -466,7 +479,17 @@ function ListingDetail() {
         </div>
       </div>
 
+      <div className="mt-8">
+        <UserReviews
+          userId={listing.user_id}
+          ownerName={profile?.full_name ?? "İlan Sahibi"}
+          listingId={listing.id}
+        />
+      </div>
+
       <AdSlot slot="in_article" layout="in-article" format="fluid" className="mt-8" />
+
+
 
 
 

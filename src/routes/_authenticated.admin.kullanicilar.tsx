@@ -3,10 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { adminListUsers, adminToggleRole, adminDeleteUser } from "@/lib/admin.functions";
+import { adminSetVerified } from "@/lib/reviews.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle } from "lucide-react";
+import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle, BadgeCheck, BadgeX } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/kullanicilar")({
@@ -24,6 +25,7 @@ function AdminUsers() {
   const fetchUsers = useServerFn(adminListUsers);
   const toggleRole = useServerFn(adminToggleRole);
   const deleteUser = useServerFn(adminDeleteUser);
+  const setVerified = useServerFn(adminSetVerified);
   const qc = useQueryClient();
   const [q, setQ] = useState("");
 
@@ -57,6 +59,17 @@ function AdminUsers() {
       toast.error(e instanceof Error ? e.message : "Hata");
     }
   };
+
+  const onToggleVerified = async (userId: string, verified: boolean) => {
+    try {
+      await setVerified({ data: { userId, verified: !verified } });
+      toast.success(verified ? "Güven rozeti kaldırıldı" : "Güven rozeti verildi");
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Hata");
+    }
+  };
+
 
   return (
     <div className="space-y-4">
@@ -119,6 +132,11 @@ function AdminUsers() {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {isAdmin && <Badge className="bg-brand">Admin</Badge>}
+                        {u.is_verified && (
+                          <Badge className="bg-emerald-600 gap-1">
+                            <BadgeCheck className="size-3" /> Güven Rozeti
+                          </Badge>
+                        )}
                         {u.email_confirmed_at ? (
                           <Badge variant="secondary" className="gap-1">
                             <CheckCircle2 className="size-3" /> Doğrulandı
@@ -135,6 +153,15 @@ function AdminUsers() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onToggleVerified(u.id, u.is_verified)}
+                          title={u.is_verified ? "Güven rozetini kaldır" : "Güven rozeti ver"}
+                          className={u.is_verified ? "text-emerald-600" : ""}
+                        >
+                          {u.is_verified ? <BadgeX className="size-4" /> : <BadgeCheck className="size-4" />}
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
