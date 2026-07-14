@@ -3,10 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { adminListUsers, adminToggleRole, adminDeleteUser } from "@/lib/admin.functions";
+import { adminSetVerified } from "@/lib/reviews.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle } from "lucide-react";
+import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle, BadgeCheck, BadgeX } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/kullanicilar")({
