@@ -62,7 +62,7 @@ function HomePage() {
     queryFn: async () => {
       let query = supabase
         .from("listings")
-        .select("id, title, type, category, city, district, price, price_type, created_at, description, view_count")
+        .select("id, user_id, title, type, category, city, district, price, price_type, created_at, description, view_count")
         .eq("status", "active")
         .limit(90);
 
