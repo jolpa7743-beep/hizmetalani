@@ -25,7 +25,13 @@ function shortDate(iso: string) {
   return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
 }
 
-export function ListingCard({ item }: { item: ListingRow & { is_urgent?: boolean; is_featured?: boolean } }) {
+export function ListingCard({
+  item,
+  ownerRating,
+}: {
+  item: ListingRow & { is_urgent?: boolean; is_featured?: boolean };
+  ownerRating?: { avg: number; count: number };
+}) {
   const cat = CATEGORY_MAP[item.category];
   const isOffering = item.type === "offering";
   return (
