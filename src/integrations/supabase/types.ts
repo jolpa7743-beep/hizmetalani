@@ -326,7 +326,12 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          adsense_enabled: boolean
           adsense_publisher_id: string | null
+          adsense_slot_footer: string | null
+          adsense_slot_header: string | null
+          adsense_slot_in_article: string | null
+          adsense_slot_sidebar: string | null
           announcement_active: boolean
           announcement_banner: string | null
           contact_email: string
@@ -342,7 +347,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          adsense_enabled?: boolean
           adsense_publisher_id?: string | null
+          adsense_slot_footer?: string | null
+          adsense_slot_header?: string | null
+          adsense_slot_in_article?: string | null
+          adsense_slot_sidebar?: string | null
           announcement_active?: boolean
           announcement_banner?: string | null
           contact_email?: string
@@ -358,7 +368,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          adsense_enabled?: boolean
           adsense_publisher_id?: string | null
+          adsense_slot_footer?: string | null
+          adsense_slot_header?: string | null
+          adsense_slot_in_article?: string | null
+          adsense_slot_sidebar?: string | null
           announcement_active?: boolean
           announcement_banner?: string | null
           contact_email?: string
