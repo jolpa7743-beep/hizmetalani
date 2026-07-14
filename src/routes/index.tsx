@@ -357,7 +357,7 @@ function FilterPanel({
             {CATEGORIES.map((c) => (
               <CategoryRadio
                 key={c.key}
-                label={<><c.icon className="mr-1.5 inline size-4" aria-hidden />{c.short}</>}
+                label={c.short}
                 active={search.kategori === c.key}
                 onClick={() => setParam("kategori", c.key)}
               />
