@@ -324,6 +324,88 @@ export type Database = {
         }
         Relationships: []
       }
+      review_reports: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          reporter_id: string
+          review_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          reporter_id: string
+          review_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          reporter_id?: string
+          review_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_reports_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          admin_note: string | null
+          comment: string
+          created_at: string
+          id: string
+          listing_id: string | null
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_note?: string | null
+          comment: string
+          created_at?: string
+          id?: string
+          listing_id?: string | null
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_note?: string | null
+          comment?: string
+          created_at?: string
+          id?: string
+          listing_id?: string | null
+          rating?: number
+          reviewee_id?: string
+          reviewer_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           adsense_enabled: boolean
@@ -489,9 +571,19 @@ export type Database = {
     Functions: {
       admin_broadcast_dm: { Args: { _body: string }; Returns: number }
       admin_get_user_id_by_email: { Args: { _email: string }; Returns: string }
+      admin_list_review_reports: { Args: never; Returns: Json }
+      admin_list_reviews: { Args: { _status?: string }; Returns: Json }
       admin_list_users: { Args: never; Returns: Json }
       admin_set_banned: {
         Args: { _banned: boolean; _reason: string; _user_id: string }
+        Returns: undefined
+      }
+      admin_set_report_status: {
+        Args: { _report_id: string; _status: string }
+        Returns: undefined
+      }
+      admin_set_review_status: {
+        Args: { _note?: string; _review_id: string; _status: string }
         Returns: undefined
       }
       admin_set_role: {
@@ -514,6 +606,13 @@ export type Database = {
         Returns: boolean
       }
       increment_listing_view: { Args: { _id: string }; Returns: undefined }
+      user_review_stats: {
+        Args: { _user_id: string }
+        Returns: {
+          avg_rating: number
+          review_count: number
+        }[]
+      }
     }
     Enums: {
       app_role: "user" | "admin"
