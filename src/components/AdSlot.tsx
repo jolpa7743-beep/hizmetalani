@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import type { SiteSettings } from "@/lib/settings.functions";
 
 type SlotKey = "header" | "in_article" | "sidebar" | "footer";
