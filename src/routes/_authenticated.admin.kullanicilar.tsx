@@ -60,6 +60,17 @@ function AdminUsers() {
     }
   };
 
+  const onToggleVerified = async (userId: string, verified: boolean) => {
+    try {
+      await setVerified({ data: { userId, verified: !verified } });
+      toast.success(verified ? "Güven rozeti kaldırıldı" : "Güven rozeti verildi");
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Hata");
+    }
+  };
+
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
