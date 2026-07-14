@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { CookieConsent } from "@/components/CookieConsent";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getSiteSettings, type SiteSettings } from "@/lib/settings.functions";
