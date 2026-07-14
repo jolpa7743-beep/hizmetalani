@@ -69,5 +69,4 @@ export function AdSlot({ slot, className = "", format = "auto", layout }: Props)
     </aside>
   );
 }
-// Silence unused import warning when tree-shaken:
-export const __used = useRouteContext;
+
