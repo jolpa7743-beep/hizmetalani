@@ -24,14 +24,14 @@ export const getUserReviews = createServerFn({ method: "GET" })
       auth: { persistSession: false, autoRefreshToken: false },
     });
     const [{ data: rows }, { data: stats }] = await Promise.all([
-      supabase
+      (supabase as any)
         .from("reviews")
         .select("id, reviewer_id, rating, comment, created_at")
         .eq("reviewee_id", data.userId)
         .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(50),
-      supabase.rpc("user_review_stats", { _user_id: data.userId }),
+      (supabase as any).rpc("user_review_stats", { _user_id: data.userId }),
     ]);
     const reviewerIds = Array.from(new Set((rows ?? []).map((r) => r.reviewer_id)));
     let names: Record<string, string> = {};
@@ -61,7 +61,7 @@ export const createReview = createServerFn({ method: "POST" })
     if (data.rating < 1 || data.rating > 5) throw new Error("Puan 1-5 arasında olmalı");
     if (!data.comment.trim() || data.comment.trim().length < 5) throw new Error("Yorum en az 5 karakter olmalı");
     if (data.revieweeId === context.userId) throw new Error("Kendinize yorum yazamazsınız");
-    const { error } = await context.supabase.from("reviews").insert({
+    const { error } = await (context.supabase as any).from("reviews").insert({
       reviewer_id: context.userId,
       reviewee_id: data.revieweeId,
       listing_id: data.listingId ?? null,
@@ -81,7 +81,7 @@ export const reportReview = createServerFn({ method: "POST" })
   .inputValidator((d: { reviewId: string; reason: string }) => d)
   .handler(async ({ data, context }) => {
     if (!data.reason.trim()) throw new Error("Sebep boş olamaz");
-    const { error } = await context.supabase.from("review_reports").insert({
+    const { error } = await (context.supabase as any).from("review_reports").insert({
       review_id: data.reviewId,
       reporter_id: context.userId,
       reason: data.reason.trim(),
