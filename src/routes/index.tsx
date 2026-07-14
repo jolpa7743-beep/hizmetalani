@@ -253,7 +253,7 @@ function HomePage() {
               )}
               {listings?.map((item, i) => (
                 <Fragment key={item.id}>
-                  <ListingCard item={item} />
+                  <ListingCard item={item} ownerRating={item.user_id ? ownerStats?.[item.user_id] : undefined} />
                   {i === 5 && (
                     <div className="col-span-full">
                       <AdSlot slot="sidebar" />
