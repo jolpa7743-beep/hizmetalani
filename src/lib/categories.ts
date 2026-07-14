@@ -1,4 +1,4 @@
-import { Baby, Sparkles, Building2, MoveUp, PawPrint, Home, type LucideIcon } from "lucide-react";
+import { Baby, Sparkles, Building2, Building, PawPrint, Home, type LucideIcon } from "lucide-react";
 import { ILLER } from "@/lib/turkiye";
 
 export type CategoryKey =
@@ -29,14 +29,14 @@ export const CATEGORIES: {
   { key: "ofis_temizlik", slug: "ofis-temizligi", label: "Ofis Temizliği", short: "Ofis Temizliği", icon: Building2,
     seoDescription: "Kurumsal ve bireysel ofis temizliği ilanları. Ofis temizlik personeli arayan işverenler ve iş arayanlar.",
     types: ["offering", "seeking"] },
-  { key: "merdiven_temizlik", slug: "merdiven-temizligi", label: "Merdiven / Apartman Temizliği", short: "Merdiven", icon: MoveUp,
-    seoDescription: "Apartman ve merdiven temizliği için düzenli veya haftalık personel ilanları.",
+  { key: "merdiven_temizlik", slug: "bina-temizligi", label: "Bina Temizliği", short: "Bina Temizliği", icon: Building,
+    seoDescription: "Apartman ve bina temizliği için düzenli veya haftalık personel ilanları.",
     types: ["offering", "seeking"] },
-  { key: "evcil_yuva_arayan", slug: "evcil-yuva-arayan", label: "Evcil Hayvan – Geçici Yuva Arayan", short: "Yuva Arayan", icon: PawPrint,
-    seoDescription: "Tatil veya kısa süreli seyahat için evcil hayvanına güvenli geçici yuva arayanlar.",
+  { key: "evcil_yuva_arayan", slug: "gecici-konaklama-arayan", label: "Evcil Hayvan – Geçici Konaklama Arayan", short: "Konaklama Arayan", icon: PawPrint,
+    seoDescription: "Tatil veya kısa süreli seyahat için evcil hayvanına güvenli geçici konaklama arayanlar.",
     types: ["seeking"] },
-  { key: "evcil_yuva_veren", slug: "evcil-yuva-veren", label: "Evcil Hayvan – Geçici Yuva Veren", short: "Yuva Veren", icon: Home,
-    seoDescription: "Evcil hayvanlara sıcak, güvenli ve geçici yuva sunan bakıcılar.",
+  { key: "evcil_yuva_veren", slug: "gecici-konaklama-sunan", label: "Evcil Hayvan – Geçici Konaklama Sunan", short: "Konaklama Sunan", icon: Home,
+    seoDescription: "Evcil hayvanlara güvenli, profesyonel ve geçici konaklama hizmeti sunan bakıcılar.",
     types: ["offering"] },
 ];
 
