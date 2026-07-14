@@ -273,9 +273,6 @@ function ListingDetail() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
           <div className="bg-surface border border-border rounded-xl overflow-hidden">
-            <div className="h-56 md:h-72 bg-gradient-to-br from-brand/10 to-brand-accent/10 grid place-items-center">
-              {cat?.icon ? <cat.icon className="size-24 text-brand/60" strokeWidth={1.25} aria-hidden /> : null}
-            </div>
             <div className="p-6">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <Badge className={isOffering ? "bg-brand text-brand-foreground" : "bg-brand-accent text-brand-foreground"}>
