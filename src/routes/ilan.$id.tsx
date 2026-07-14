@@ -465,10 +465,13 @@ function ListingDetail() {
           <div className="bg-surface border border-border rounded-xl p-4 text-sm text-muted-foreground">
             <p className="font-medium text-foreground mb-2 flex items-center gap-1.5"><ShieldAlert className="size-4 text-amber-600" aria-hidden /> Güvenlik Uyarısı</p>
             <p>Görüşmeden önce ödeme yapmayın, kimlik bilgilerinizi paylaşmayın. Anlaşmalarınızı yazılı yapın.</p>
+          </div>
         </div>
       </div>
 
       <AdSlot slot="in_article" layout="in-article" format="fluid" className="mt-8" />
+
+
 
 
       <AlertDialog open={authDialog} onOpenChange={setAuthDialog}>
