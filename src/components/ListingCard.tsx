@@ -76,11 +76,24 @@ export function ListingCard({
           )}
         </div>
 
-        {ownerRating && ownerRating.count > 0 && (
-          <div className="mt-1.5 inline-flex items-center gap-1 text-xs">
-            <Star className="size-3 fill-amber-400 text-amber-400" />
+        {ownerRating && ownerRating.count > 0 ? (
+          <div className="mt-1.5 inline-flex items-center gap-1 text-xs" aria-label={`İlan sahibi puanı ${ownerRating.avg.toFixed(1)} / 5, ${ownerRating.count} değerlendirme`}>
+            <span className="inline-flex items-center gap-0.5">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Star key={n} className={`size-3 ${n <= Math.round(ownerRating.avg) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/40"}`} />
+              ))}
+            </span>
             <span className="font-semibold tabular-nums">{ownerRating.avg.toFixed(1)}</span>
             <span className="text-muted-foreground">({ownerRating.count})</span>
+          </div>
+        ) : (
+          <div className="mt-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground/70" aria-label="Henüz değerlendirme yok">
+            <span className="inline-flex items-center gap-0.5">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Star key={n} className="size-3 text-muted-foreground/30" />
+              ))}
+            </span>
+            <span>Yeni</span>
           </div>
         )}
 
