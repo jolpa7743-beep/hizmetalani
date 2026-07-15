@@ -41,7 +41,7 @@ function Conversations() {
     queryKey: ["conv-others", otherIds.sort().join(",")],
     enabled: otherIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("id, full_name").in("id", otherIds);
+      const { data, error } = await supabase.from("profiles_public" as never).select("id, full_name").in("id", otherIds) as unknown as { data: Array<{ id: string; full_name: string | null }> | null; error: Error | null };
       if (error) throw error;
       return Object.fromEntries((data ?? []).map((p) => [p.id, p.full_name])) as Record<string, string | null>;
     },

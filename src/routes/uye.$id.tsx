@@ -26,7 +26,7 @@ const profileQueryOptions = (id: string) => ({
   queryFn: async () => {
     const [{ data: profile }, { data: listings }] = await Promise.all([
       supabase
-        .from("profiles")
+        .from("profiles_public" as never)
         .select("id, full_name, avatar_url, city, district, bio, is_verified, trust_level, created_at")
         .eq("id", id)
         .maybeSingle(),

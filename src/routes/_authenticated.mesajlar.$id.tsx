@@ -46,7 +46,7 @@ function ChatPage() {
     queryKey: ["profile", otherId],
     enabled: !!otherId,
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("full_name").eq("id", otherId!).maybeSingle();
+      const { data } = await supabase.from("profiles_public" as never).select("full_name").eq("id", otherId!).maybeSingle() as unknown as { data: { full_name: string | null } | null };
       return data;
     },
   });
