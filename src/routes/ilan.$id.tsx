@@ -221,6 +221,13 @@ function ListingDetail() {
     queryFn: () => fetchSettings(),
     staleTime: 5 * 60_000,
   });
+  const fetchOwnerReviews = useServerFn(getUserReviews);
+  const ownerId = data?.listing?.user_id;
+  const { data: ownerReviews } = useQuery({
+    queryKey: ["user-reviews", ownerId],
+    queryFn: () => fetchOwnerReviews({ data: { userId: ownerId! } }),
+    enabled: !!ownerId,
+  });
   const badgeVisibility: BadgeVisibility = (settings?.trust_badge_visibility as BadgeVisibility | undefined) ?? "all";
 
   useEffect(() => {
