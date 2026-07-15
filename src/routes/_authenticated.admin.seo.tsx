@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Save, Search, Globe, BarChart3, ShieldCheck, Radio, Megaphone } from "lucide-react";
+import { Save, Search, Globe, BarChart3, ShieldCheck, Radio, Megaphone, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,6 +120,45 @@ function AdminSEO() {
             <Label htmlFor="ann-active">Duyuruyu yayında göster</Label>
           </div>
           <div><Label>Duyuru metni</Label><Textarea rows={2} value={form.announcement_banner ?? ""} onChange={(e) => set("announcement_banner", e.target.value)} placeholder="Örn: 15 Ağustos'a kadar tüm ilanlar ücretsiz." /></div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><KeyRound className="size-4" /> E-posta Doğrulama Kodları</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Her akışta 6 haneli kod, kullanıcının e-posta adresine sistem tarafından gönderilir. Kayıt ve şifre sıfırlama e-postaları
+            Lovable altyapısı üzerinden yollanır. Rozet için markalı e-posta gönderimi kendi domaininiz eklendiğinde aktifleşir.
+          </p>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <Label htmlFor="otp-signup" className="text-sm">Kayıt (üye ol) e-posta kodu</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Kayıt olan kullanıcı e-postasındaki kodu / bağlantıyı doğrulamadan hesabı aktif olmaz.
+              </p>
+            </div>
+            <Switch id="otp-signup" checked={form.signup_email_otp_enabled ?? true} onCheckedChange={(v) => set("signup_email_otp_enabled", v)} />
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <Label htmlFor="otp-reset" className="text-sm">Şifremi unuttum akışı</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Giriş ekranında "Şifremi unuttum" bağlantısını gösterir; kullanıcıya e-posta ile sıfırlama bağlantısı gönderilir.
+              </p>
+            </div>
+            <Switch id="otp-reset" checked={form.password_reset_otp_enabled ?? true} onCheckedChange={(v) => set("password_reset_otp_enabled", v)} />
+          </div>
+          <div className="flex items-center justify-between gap-3 rounded-md border border-dashed px-3 py-2">
+            <div>
+              <Label htmlFor="otp-badge" className="text-sm">Rozet talebinde e-posta kodu</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Doğrulanmış üye rozeti talebinde 6 haneli kod ile e-posta teyidi ister. <strong>Etkinleştirilmesi için önce kendi domaininiz gerekir.</strong>
+              </p>
+            </div>
+            <Switch id="otp-badge" checked={form.badge_email_otp_enabled ?? false} onCheckedChange={(v) => set("badge_email_otp_enabled", v)} />
+          </div>
         </CardContent>
       </Card>
 

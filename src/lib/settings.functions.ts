@@ -22,6 +22,9 @@ export type SiteSettings = {
   adsense_slot_sidebar: string | null;
   adsense_slot_footer: string | null;
   trust_badge_visibility: "all" | "verified_only" | "hidden";
+  signup_email_otp_enabled: boolean;
+  password_reset_otp_enabled: boolean;
+  badge_email_otp_enabled: boolean;
   updated_at: string;
 };
 

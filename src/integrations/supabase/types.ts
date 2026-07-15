@@ -521,13 +521,16 @@ export type Database = {
           adsense_test_mode: boolean
           announcement_active: boolean
           announcement_banner: string | null
+          badge_email_otp_enabled: boolean
           contact_email: string
           contact_phone: string | null
           ga_measurement_id: string | null
           id: number
           og_image_url: string | null
+          password_reset_otp_enabled: boolean
           robots_txt: string
           search_console_verification: string | null
+          signup_email_otp_enabled: boolean
           site_description: string
           site_keywords: string
           site_name: string
@@ -544,13 +547,16 @@ export type Database = {
           adsense_test_mode?: boolean
           announcement_active?: boolean
           announcement_banner?: string | null
+          badge_email_otp_enabled?: boolean
           contact_email?: string
           contact_phone?: string | null
           ga_measurement_id?: string | null
           id?: number
           og_image_url?: string | null
+          password_reset_otp_enabled?: boolean
           robots_txt?: string
           search_console_verification?: string | null
+          signup_email_otp_enabled?: boolean
           site_description?: string
           site_keywords?: string
           site_name?: string
@@ -567,13 +573,16 @@ export type Database = {
           adsense_test_mode?: boolean
           announcement_active?: boolean
           announcement_banner?: string | null
+          badge_email_otp_enabled?: boolean
           contact_email?: string
           contact_phone?: string | null
           ga_measurement_id?: string | null
           id?: number
           og_image_url?: string | null
+          password_reset_otp_enabled?: boolean
           robots_txt?: string
           search_console_verification?: string | null
+          signup_email_otp_enabled?: boolean
           site_description?: string
           site_keywords?: string
           site_name?: string
@@ -670,6 +679,39 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verification_codes: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          purpose: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          purpose: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string
           user_id?: string
         }
         Relationships: []

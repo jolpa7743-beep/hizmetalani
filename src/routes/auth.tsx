@@ -43,11 +43,33 @@ function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"signin" | "signup">(search.mode ?? "signin");
-  const [loading, setLoading] = useState<null | "email" | "google" | "seed">(null);
+  const [loading, setLoading] = useState<null | "email" | "google" | "seed" | "reset">(null);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const seed = useServerFn(seedDemoUsers);
+
+  const onForgotPassword = async () => {
+    if (!form.email || emailError) {
+      setSubmitError("Sıfırlama bağlantısı için önce e-posta adresinizi girin");
+      return;
+    }
+    setLoading("reset");
+    setSubmitError(null);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(form.email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Şifre sıfırlama bağlantısı e-postanıza gönderildi. Gelen kutunuzu (ve spam) kontrol edin.");
+    } catch (err) {
+      const msg = translateAuthError(err);
+      setSubmitError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(null);
+    }
+  };
 
   // Live validation
   const emailError = validateEmailLive(form.email);
@@ -222,11 +244,23 @@ function AuthPage() {
                 <div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Şifre</Label>
+                    <div className="flex items-center gap-2">
                     {tab === "signup" && form.password && !passwordError && (
                       <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                         <CheckCircle2 className="size-3 text-emerald-600" /> {passwordStrength.label}
                       </span>
                     )}
+                    {tab === "signin" && (
+                      <button
+                        type="button"
+                        onClick={onForgotPassword}
+                        disabled={loading !== null}
+                        className="text-[11px] font-medium text-brand hover:underline disabled:opacity-50"
+                      >
+                        {loading === "reset" ? "Gönderiliyor…" : "Şifremi unuttum"}
+                      </button>
+                    )}
+                    </div>
                   </div>
                   <div className="relative">
                     <Input
