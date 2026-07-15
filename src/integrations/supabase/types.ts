@@ -261,6 +261,42 @@ export type Database = {
           },
         ]
       }
+      mod_actions: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: string
+          new_status: string | null
+          note: string | null
+          prev_status: string | null
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          new_status?: string | null
+          note?: string | null
+          prev_status?: string | null
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          new_status?: string | null
+          note?: string | null
+          prev_status?: string | null
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -580,6 +616,8 @@ export type Database = {
       admin_list_review_reports: { Args: never; Returns: Json }
       admin_list_reviews: { Args: { _status?: string }; Returns: Json }
       admin_list_users: { Args: never; Returns: Json }
+      admin_moderation_inbox: { Args: never; Returns: Json }
+      admin_recent_mod_actions: { Args: { _limit?: number }; Returns: Json }
       admin_set_banned: {
         Args: { _banned: boolean; _reason: string; _user_id: string }
         Returns: undefined
