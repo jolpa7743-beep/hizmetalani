@@ -591,6 +591,45 @@ export type Database = {
         }
         Relationships: []
       }
+      smtp_settings: {
+        Row: {
+          enabled: boolean
+          from_email: string
+          from_name: string
+          host: string
+          id: number
+          password: string
+          port: number
+          secure: boolean
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          enabled?: boolean
+          from_email?: string
+          from_name?: string
+          host?: string
+          id?: number
+          password?: string
+          port?: number
+          secure?: boolean
+          updated_at?: string
+          username?: string
+        }
+        Update: {
+          enabled?: boolean
+          from_email?: string
+          from_name?: string
+          host?: string
+          id?: number
+          password?: string
+          port?: number
+          secure?: boolean
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       ticket_messages: {
         Row: {
           body: string

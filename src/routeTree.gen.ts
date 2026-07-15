@@ -37,6 +37,7 @@ import { Route as AuthenticatedMesajlarIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminYorumlarRouteImport } from './routes/_authenticated.admin.yorumlar'
 import { Route as AuthenticatedAdminYayinRouteImport } from './routes/_authenticated.admin.yayin'
 import { Route as AuthenticatedAdminTicketlarRouteImport } from './routes/_authenticated.admin.ticketlar'
+import { Route as AuthenticatedAdminSmtpRouteImport } from './routes/_authenticated.admin.smtp'
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated.admin.seo'
 import { Route as AuthenticatedAdminRozetlerRouteImport } from './routes/_authenticated.admin.rozetler'
 import { Route as AuthenticatedAdminRaporlarRouteImport } from './routes/_authenticated.admin.raporlar'
@@ -189,6 +190,11 @@ const AuthenticatedAdminTicketlarRoute =
     path: '/ticketlar',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminSmtpRoute = AuthenticatedAdminSmtpRouteImport.update({
+  id: '/smtp',
+  path: '/smtp',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminSeoRoute = AuthenticatedAdminSeoRouteImport.update({
   id: '/seo',
   path: '/seo',
@@ -274,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/admin/raporlar': typeof AuthenticatedAdminRaporlarRoute
   '/admin/rozetler': typeof AuthenticatedAdminRozetlerRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
+  '/admin/smtp': typeof AuthenticatedAdminSmtpRoute
   '/admin/ticketlar': typeof AuthenticatedAdminTicketlarRoute
   '/admin/yayin': typeof AuthenticatedAdminYayinRoute
   '/admin/yorumlar': typeof AuthenticatedAdminYorumlarRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/admin/raporlar': typeof AuthenticatedAdminRaporlarRoute
   '/admin/rozetler': typeof AuthenticatedAdminRozetlerRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
+  '/admin/smtp': typeof AuthenticatedAdminSmtpRoute
   '/admin/ticketlar': typeof AuthenticatedAdminTicketlarRoute
   '/admin/yayin': typeof AuthenticatedAdminYayinRoute
   '/admin/yorumlar': typeof AuthenticatedAdminYorumlarRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/raporlar': typeof AuthenticatedAdminRaporlarRoute
   '/_authenticated/admin/rozetler': typeof AuthenticatedAdminRozetlerRoute
   '/_authenticated/admin/seo': typeof AuthenticatedAdminSeoRoute
+  '/_authenticated/admin/smtp': typeof AuthenticatedAdminSmtpRoute
   '/_authenticated/admin/ticketlar': typeof AuthenticatedAdminTicketlarRoute
   '/_authenticated/admin/yayin': typeof AuthenticatedAdminYayinRoute
   '/_authenticated/admin/yorumlar': typeof AuthenticatedAdminYorumlarRoute
@@ -391,6 +400,7 @@ export interface FileRouteTypes {
     | '/admin/raporlar'
     | '/admin/rozetler'
     | '/admin/seo'
+    | '/admin/smtp'
     | '/admin/ticketlar'
     | '/admin/yayin'
     | '/admin/yorumlar'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/admin/raporlar'
     | '/admin/rozetler'
     | '/admin/seo'
+    | '/admin/smtp'
     | '/admin/ticketlar'
     | '/admin/yayin'
     | '/admin/yorumlar'
@@ -467,6 +478,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/raporlar'
     | '/_authenticated/admin/rozetler'
     | '/_authenticated/admin/seo'
+    | '/_authenticated/admin/smtp'
     | '/_authenticated/admin/ticketlar'
     | '/_authenticated/admin/yayin'
     | '/_authenticated/admin/yorumlar'
@@ -693,6 +705,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTicketlarRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/smtp': {
+      id: '/_authenticated/admin/smtp'
+      path: '/smtp'
+      fullPath: '/admin/smtp'
+      preLoaderRoute: typeof AuthenticatedAdminSmtpRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/seo': {
       id: '/_authenticated/admin/seo'
       path: '/seo'
@@ -769,6 +788,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminRaporlarRoute: typeof AuthenticatedAdminRaporlarRoute
   AuthenticatedAdminRozetlerRoute: typeof AuthenticatedAdminRozetlerRoute
   AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
+  AuthenticatedAdminSmtpRoute: typeof AuthenticatedAdminSmtpRoute
   AuthenticatedAdminTicketlarRoute: typeof AuthenticatedAdminTicketlarRoute
   AuthenticatedAdminYayinRoute: typeof AuthenticatedAdminYayinRoute
   AuthenticatedAdminYorumlarRoute: typeof AuthenticatedAdminYorumlarRoute
@@ -785,6 +805,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminRaporlarRoute: AuthenticatedAdminRaporlarRoute,
   AuthenticatedAdminRozetlerRoute: AuthenticatedAdminRozetlerRoute,
   AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,
+  AuthenticatedAdminSmtpRoute: AuthenticatedAdminSmtpRoute,
   AuthenticatedAdminTicketlarRoute: AuthenticatedAdminTicketlarRoute,
   AuthenticatedAdminYayinRoute: AuthenticatedAdminYayinRoute,
   AuthenticatedAdminYorumlarRoute: AuthenticatedAdminYorumlarRoute,
