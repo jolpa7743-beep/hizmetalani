@@ -45,8 +45,10 @@ async function anonClient() {
 export const getCategoryConfig = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = await anonClient();
   const [{ data: groups }, { data: overrides }] = await Promise.all([
-    supabase.from("category_groups").select("*").order("sort_order"),
-    supabase.from("category_overrides").select("*"),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.from as any)("category_groups").select("*").order("sort_order"),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.from as any)("category_overrides").select("*"),
   ]);
   const g = (groups ?? []) as CategoryGroup[];
   const o = (overrides ?? []) as CategoryOverride[];
@@ -90,13 +92,15 @@ export const adminUpsertGroup = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const t = (supabaseAdmin.from as any)("category_groups");
     if (data.id) {
-      const { error } = await supabaseAdmin.from("category_groups").update({
+      const { error } = await t.update({
         key: data.key, label: data.label, sort_order: data.sort_order, visible: data.visible,
       }).eq("id", data.id);
       if (error) throw new Error(error.message);
     } else {
-      const { error } = await supabaseAdmin.from("category_groups").insert({
+      const { error } = await t.insert({
         key: data.key, label: data.label, sort_order: data.sort_order, visible: data.visible,
       });
       if (error) throw new Error(error.message);
@@ -110,7 +114,8 @@ export const adminDeleteGroup = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("category_groups").delete().eq("id", data.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin.from as any)("category_groups").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -130,7 +135,8 @@ export const adminUpsertOverride = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("category_overrides").upsert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin.from as any)("category_overrides").upsert({
       key: data.key,
       label: data.label,
       short_label: data.short_label,
