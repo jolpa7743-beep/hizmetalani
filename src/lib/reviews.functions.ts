@@ -41,7 +41,7 @@ export const getUserReviews = createServerFn({ method: "GET" })
         .from("profiles_public")
         .select("id, full_name")
         .in("id", reviewerIds);
-      names = Object.fromEntries((profs ?? []).map((p) => [p.id, p.full_name ?? "Üye"]));
+      names = Object.fromEntries(((profs ?? []) as Array<{ id: string; full_name: string | null }>).map((p) => [p.id, p.full_name ?? "Üye"]));
     }
     const reviews = rowsArr.map((r) => ({
       ...r,
