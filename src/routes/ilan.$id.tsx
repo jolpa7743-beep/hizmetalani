@@ -38,7 +38,7 @@ const listingQueryOptions = (id: string) => ({
     if (error) throw error;
     if (!listing) return null;
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("profiles_public" as never)
       .select("full_name,avatar_url,is_verified,trust_level,city,district,created_at")
       .eq("id", listing.user_id)
       .maybeSingle();

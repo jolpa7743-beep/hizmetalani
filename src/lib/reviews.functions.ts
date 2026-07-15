@@ -37,8 +37,8 @@ export const getUserReviews = createServerFn({ method: "GET" })
     const reviewerIds = Array.from(new Set(rowsArr.map((r) => r.reviewer_id)));
     let names: Record<string, string> = {};
     if (reviewerIds.length) {
-      const { data: profs } = await supabase
-        .from("profiles")
+      const { data: profs } = await (supabase as any)
+        .from("profiles_public")
         .select("id, full_name")
         .in("id", reviewerIds);
       names = Object.fromEntries((profs ?? []).map((p) => [p.id, p.full_name ?? "Üye"]));
@@ -205,7 +205,7 @@ export const getMyReviews = createServerFn({ method: "GET" })
     const ids = Array.from(new Set(rows.map((r) => r.reviewee_id)));
     let names: Record<string, string> = {};
     if (ids.length) {
-      const { data: profs } = await context.supabase.from("profiles").select("id, full_name").in("id", ids);
+      const { data: profs } = await (context.supabase as unknown as { from: (t: string) => { select: (c: string) => { in: (col: string, v: string[]) => Promise<{ data: Array<{ id: string; full_name: string | null }> | null }> } } }).from("profiles_public").select("id, full_name").in("id", ids);
       names = Object.fromEntries((profs ?? []).map((p) => [p.id, p.full_name ?? "Üye"]));
     }
     return rows.map((r) => ({ ...r, reviewee_name: names[r.reviewee_id] ?? "Üye" }));
