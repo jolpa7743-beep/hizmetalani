@@ -21,7 +21,8 @@ import {
 import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Building2, User as UserIcon, ShieldAlert, CalendarDays, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AdSlot } from "@/components/AdSlot";
-import { UserReviews } from "@/components/UserReviews";
+import { StarRow } from "@/components/UserReviews";
+import { getUserReviews } from "@/lib/reviews.functions";
 import { getSiteSettings } from "@/lib/settings.functions";
 import { shouldShowBadge, trustBadgeMeta, type BadgeVisibility } from "@/lib/trust";
 
@@ -219,6 +220,13 @@ function ListingDetail() {
     queryKey: ["site-settings-public"],
     queryFn: () => fetchSettings(),
     staleTime: 5 * 60_000,
+  });
+  const fetchOwnerReviews = useServerFn(getUserReviews);
+  const ownerId = data?.listing?.user_id;
+  const { data: ownerReviews } = useQuery({
+    queryKey: ["user-reviews", ownerId],
+    queryFn: () => fetchOwnerReviews({ data: { userId: ownerId! } }),
+    enabled: !!ownerId,
   });
   const badgeVisibility: BadgeVisibility = (settings?.trust_badge_visibility as BadgeVisibility | undefined) ?? "all";
 
@@ -471,6 +479,27 @@ function ListingDetail() {
                 Üyelik: {new Date(profile.created_at).toLocaleDateString("tr-TR", { year: "numeric", month: "long" })}
               </div>
             )}
+
+            {/* Puan özeti + profili gör */}
+            <div className="mt-3 pt-3 border-t border-border">
+              {ownerReviews && ownerReviews.count > 0 ? (
+                <div className="flex items-center gap-2 text-sm">
+                  <StarRow value={ownerReviews.avg} />
+                  <span className="font-semibold tabular-nums">{ownerReviews.avg.toFixed(1)}</span>
+                  <span className="text-xs text-muted-foreground">({ownerReviews.count} değerlendirme)</span>
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground">Henüz değerlendirme yok</div>
+              )}
+              <Link
+                to="/uye/$id"
+                params={{ id: listing.user_id }}
+                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
+              >
+                Profili ve yorumları gör →
+              </Link>
+            </div>
+
             {!isOwner ? (
               <Button
                 onClick={contactSeller}
@@ -490,14 +519,6 @@ function ListingDetail() {
             <p>Görüşmeden önce ödeme yapmayın, kimlik bilgilerinizi paylaşmayın. Anlaşmalarınızı yazılı yapın.</p>
           </div>
         </div>
-      </div>
-
-      <div className="mt-8">
-        <UserReviews
-          userId={listing.user_id}
-          ownerName={profile?.full_name ?? "İlan Sahibi"}
-          listingId={listing.id}
-        />
       </div>
 
       <AdSlot slot="in_article" layout="in-article" format="fluid" className="mt-8" />

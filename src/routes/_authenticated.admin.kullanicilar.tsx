@@ -3,13 +3,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { z } from "zod";
-import { adminListUsers, adminToggleRole, adminDeleteUser } from "@/lib/admin.functions";
+import { adminListUsers, adminToggleRole, adminDeleteUser, adminUpdateProfile } from "@/lib/admin.functions";
 import { adminSetTrustLevel } from "@/lib/reviews.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle, Pencil } from "lucide-react";
 import { TRUST_LEVELS, trustBadgeMeta } from "@/lib/trust";
 import { toast } from "sonner";
 
@@ -32,9 +34,11 @@ function AdminUsers() {
   const toggleRole = useServerFn(adminToggleRole);
   const deleteUser = useServerFn(adminDeleteUser);
   const setTrust = useServerFn(adminSetTrustLevel);
+  const updateProfile = useServerFn(adminUpdateProfile);
   const qc = useQueryClient();
   const search = Route.useSearch();
   const [q, setQ] = useState(search.q ?? "");
+  const [editUser, setEditUser] = useState<AdminUser | null>(null);
 
   useEffect(() => { if (search.q) setQ(search.q); }, [search.q]);
 
@@ -181,6 +185,14 @@ function AdminUsers() {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => setEditUser(u)}
+                          title="Düzenle"
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => onToggleRole(u.id, isAdmin)}
                           title={isAdmin ? "Admin yetkisini kaldır" : "Admin yap"}
                         >
@@ -203,6 +215,81 @@ function AdminUsers() {
           </table>
         </div>
       </div>
+
+      <EditUserDialog
+        user={editUser}
+        onClose={() => setEditUser(null)}
+        onSave={async (patch) => {
+          if (!editUser) return;
+          try {
+            await updateProfile({ data: { userId: editUser.id, ...patch } });
+            toast.success("Kullanıcı güncellendi");
+            qc.invalidateQueries({ queryKey: ["admin-users"] });
+            setEditUser(null);
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Hata");
+          }
+        }}
+      />
     </div>
+  );
+}
+
+function EditUserDialog({
+  user,
+  onClose,
+  onSave,
+}: {
+  user: AdminUser | null;
+  onClose: () => void;
+  onSave: (patch: { full_name: string; phone: string; city: string; district: string }) => void;
+}) {
+  const [full_name, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  useEffect(() => {
+    if (user) {
+      setFullName(user.full_name ?? "");
+      setPhone(user.phone ?? "");
+      setCity(user.city ?? "");
+      setDistrict(user.district ?? "");
+    }
+  }, [user]);
+  return (
+    <Dialog open={!!user} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Kullanıcıyı Düzenle</DialogTitle>
+        </DialogHeader>
+        {user && (
+          <div className="space-y-3">
+            <div className="text-xs text-muted-foreground">{user.email}</div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="edit-name">Ad Soyad</Label>
+              <Input id="edit-name" value={full_name} onChange={(e) => setFullName(e.target.value)} />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor="edit-phone">Telefon</Label>
+              <Input id="edit-phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1.5">
+                <Label htmlFor="edit-city">Şehir</Label>
+                <Input id="edit-city" value={city} onChange={(e) => setCity(e.target.value)} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="edit-district">İlçe</Label>
+                <Input id="edit-district" value={district} onChange={(e) => setDistrict(e.target.value)} />
+              </div>
+            </div>
+          </div>
+        )}
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Vazgeç</Button>
+          <Button onClick={() => onSave({ full_name, phone, city, district })}>Kaydet</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

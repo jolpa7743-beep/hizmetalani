@@ -154,3 +154,52 @@ export const adminStats = createServerFn({ method: "GET" })
       messages: messages.count ?? 0,
     };
   });
+
+/** Admin: update profile fields on any user */
+export const adminUpdateProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: {
+    userId: string;
+    full_name?: string | null;
+    phone?: string | null;
+    city?: string | null;
+    district?: string | null;
+  }) => d)
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const patch: Record<string, string | null> = {};
+    for (const k of ["full_name", "phone", "city", "district"] as const) {
+      if (k in data) patch[k] = (data[k] ?? null) as string | null;
+    }
+    if (!Object.keys(patch).length) return { ok: true };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await (supabaseAdmin as unknown as { from: (t: string) => { update: (v: unknown) => { eq: (c: string, id: string) => Promise<{ error: { message: string } | null }> } } }).from("profiles").update(patch).eq("id", data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Admin: counts for nav badges (pending reviews + open reports) */
+export const adminModerationCounts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [pending, reports, tickets] = await Promise.all([
+      supabaseAdmin.from("reviews").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabaseAdmin.from("review_reports").select("*", { count: "exact", head: true }).eq("status", "open"),
+      supabaseAdmin.from("tickets").select("*", { count: "exact", head: true }).eq("status", "open"),
+    ]);
+    return {
+      pendingReviews: pending.count ?? 0,
+      openReports: reports.count ?? 0,
+      openTickets: tickets.count ?? 0,
+    };
+  });
