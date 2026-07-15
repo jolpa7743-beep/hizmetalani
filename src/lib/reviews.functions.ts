@@ -210,3 +210,42 @@ export const getMyReviews = createServerFn({ method: "GET" })
     }
     return rows.map((r) => ({ ...r, reviewee_name: names[r.reviewee_id] ?? "Üye" }));
   });
+
+/** Admin: unified inbox — pending reviews + open reports */
+export const adminModerationInbox = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase.rpc as any)("admin_moderation_inbox");
+    if (error) throw new Error(error.message);
+    return (data ?? { reviews: [], reports: [] }) as {
+      reviews: Array<{
+        id: string; rating: number; comment: string; status: string; created_at: string;
+        reviewer_id: string; reviewer_name: string | null;
+        reviewee_id: string; reviewee_name: string | null;
+        open_reports: number;
+      }>;
+      reports: Array<{
+        id: string; reason: string; status: string; created_at: string;
+        review_id: string; review_comment: string | null; rating: number | null; review_status: string | null;
+        reporter_id: string; reporter_name: string | null;
+        reviewee_id: string; reviewee_name: string | null;
+      }>;
+    };
+  });
+
+/** Admin: recent moderation actions (audit history) */
+export const adminRecentModActions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { limit?: number } = {}) => d)
+  .handler(async ({ data, context }) => {
+    const { data: rows, error } = await (context.supabase.rpc as any)("admin_recent_mod_actions", {
+      _limit: data.limit ?? 50,
+    });
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as Array<{
+      id: string; target_type: "review" | "report"; target_id: string;
+      action: string; prev_status: string | null; new_status: string | null;
+      note: string | null; created_at: string;
+      actor_id: string; actor_name: string | null;
+    }>;
+  });
