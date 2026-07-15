@@ -23,6 +23,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdsDottxtRouteImport } from './routes/ads[.]txt'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UyeIdRouteImport } from './routes/uye.$id'
 import { Route as IlanIdRouteImport } from './routes/ilan.$id'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated.profil'
 import { Route as AuthenticatedIlanlarimRouteImport } from './routes/_authenticated.ilanlarim'
@@ -110,6 +111,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UyeIdRoute = UyeIdRouteImport.update({
+  id: '/uye/$id',
+  path: '/uye/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IlanIdRoute = IlanIdRouteImport.update({
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
+  '/uye/$id': typeof UyeIdRoute
   '/admin/duyurular': typeof AuthenticatedAdminDuyurularRoute
   '/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
   '/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
+  '/uye/$id': typeof UyeIdRoute
   '/admin/duyurular': typeof AuthenticatedAdminDuyurularRoute
   '/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
   '/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/_authenticated/ilanlarim': typeof AuthenticatedIlanlarimRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/ilan/$id': typeof IlanIdRoute
+  '/uye/$id': typeof UyeIdRoute
   '/_authenticated/admin/duyurular': typeof AuthenticatedAdminDuyurularRoute
   '/_authenticated/admin/ilanlar': typeof AuthenticatedAdminIlanlarRoute
   '/_authenticated/admin/kullanicilar': typeof AuthenticatedAdminKullanicilarRoute
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/ilanlarim'
     | '/profil'
     | '/ilan/$id'
+    | '/uye/$id'
     | '/admin/duyurular'
     | '/admin/ilanlar'
     | '/admin/kullanicilar'
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/ilanlarim'
     | '/profil'
     | '/ilan/$id'
+    | '/uye/$id'
     | '/admin/duyurular'
     | '/admin/ilanlar'
     | '/admin/kullanicilar'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ilanlarim'
     | '/_authenticated/profil'
     | '/ilan/$id'
+    | '/uye/$id'
     | '/_authenticated/admin/duyurular'
     | '/_authenticated/admin/ilanlar'
     | '/_authenticated/admin/kullanicilar'
@@ -441,6 +453,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   IlanIdRoute: typeof IlanIdRoute
+  UyeIdRoute: typeof UyeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -541,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/uye/$id': {
+      id: '/uye/$id'
+      path: '/uye/$id'
+      fullPath: '/uye/$id'
+      preLoaderRoute: typeof UyeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ilan/$id': {
@@ -750,6 +770,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   IlanIdRoute: IlanIdRoute,
+  UyeIdRoute: UyeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
