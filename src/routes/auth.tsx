@@ -262,11 +262,6 @@ function AuthPage() {
                     )}
                     </div>
                   </div>
-                      <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                        <CheckCircle2 className="size-3 text-emerald-600" /> {passwordStrength.label}
-                      </span>
-                    )}
-                  </div>
                   <div className="relative">
                     <Input
                       id="password"
