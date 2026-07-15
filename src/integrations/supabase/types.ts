@@ -279,6 +279,7 @@ export type Database = {
           phone: string | null
           phone_verified: boolean
           skills: string[] | null
+          trust_level: number
           updated_at: string
           website: string | null
         }
@@ -299,6 +300,7 @@ export type Database = {
           phone?: string | null
           phone_verified?: boolean
           skills?: string[] | null
+          trust_level?: number
           updated_at?: string
           website?: string | null
         }
@@ -319,6 +321,7 @@ export type Database = {
           phone?: string | null
           phone_verified?: boolean
           skills?: string[] | null
+          trust_level?: number
           updated_at?: string
           website?: string | null
         }
@@ -426,6 +429,7 @@ export type Database = {
           site_description: string
           site_keywords: string
           site_name: string
+          trust_badge_visibility: string
           updated_at: string
         }
         Insert: {
@@ -447,6 +451,7 @@ export type Database = {
           site_description?: string
           site_keywords?: string
           site_name?: string
+          trust_badge_visibility?: string
           updated_at?: string
         }
         Update: {
@@ -468,6 +473,7 @@ export type Database = {
           site_description?: string
           site_keywords?: string
           site_name?: string
+          trust_badge_visibility?: string
           updated_at?: string
         }
         Relationships: []
@@ -594,6 +600,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_set_trust_level: {
+        Args: { _level: number; _user_id: string }
+        Returns: undefined
+      }
       admin_set_verified: {
         Args: { _user_id: string; _verified: boolean }
         Returns: undefined
@@ -606,6 +616,14 @@ export type Database = {
         Returns: boolean
       }
       increment_listing_view: { Args: { _id: string }; Returns: undefined }
+      listings_owner_stats: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          avg_rating: number
+          review_count: number
+          user_id: string
+        }[]
+      }
       user_review_stats: {
         Args: { _user_id: string }
         Returns: {

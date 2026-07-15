@@ -20,6 +20,7 @@ export type SiteSettings = {
   adsense_slot_in_article: string | null;
   adsense_slot_sidebar: string | null;
   adsense_slot_footer: string | null;
+  trust_badge_visibility: "all" | "verified_only" | "hidden";
   updated_at: string;
 };
 

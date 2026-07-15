@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { Star } from "lucide-react";
 import { CATEGORY_MAP, TYPE_LABEL, formatPrice, type CategoryKey, type ListingType } from "@/lib/categories";
 
 export type ListingRow = {
   id: string;
+  user_id?: string;
   title: string;
   type: ListingType;
   category: CategoryKey;
@@ -23,7 +25,13 @@ function shortDate(iso: string) {
   return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
 }
 
-export function ListingCard({ item }: { item: ListingRow & { is_urgent?: boolean; is_featured?: boolean } }) {
+export function ListingCard({
+  item,
+  ownerRating,
+}: {
+  item: ListingRow & { is_urgent?: boolean; is_featured?: boolean };
+  ownerRating?: { avg: number; count: number };
+}) {
   const cat = CATEGORY_MAP[item.category];
   const isOffering = item.type === "offering";
   return (
@@ -67,6 +75,14 @@ export function ListingCard({ item }: { item: ListingRow & { is_urgent?: boolean
             <span className="tabular-nums">{item.view_count} görüntülenme</span>
           )}
         </div>
+
+        {ownerRating && ownerRating.count > 0 && (
+          <div className="mt-1.5 inline-flex items-center gap-1 text-xs">
+            <Star className="size-3 fill-amber-400 text-amber-400" />
+            <span className="font-semibold tabular-nums">{ownerRating.avg.toFixed(1)}</span>
+            <span className="text-muted-foreground">({ownerRating.count})</span>
+          </div>
+        )}
 
         <div className="mt-3 flex items-end justify-between gap-2 pt-2 border-t border-border">
           <div className="text-brand font-bold text-[15px] tabular-nums">

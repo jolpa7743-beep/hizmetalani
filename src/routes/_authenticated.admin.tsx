@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useRouterState, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText, Search, MessageCircle, Megaphone, Send, Star, Flag } from "lucide-react";
+import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText, Search, MessageCircle, Megaphone, Send, Star, Flag, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -25,6 +25,7 @@ function AdminLayout() {
     { to: "/admin/ticketlar", label: "Destek Talepleri", icon: MessageCircle },
     { to: "/admin/duyurular", label: "Duyurular", icon: Megaphone },
     { to: "/admin/yayin", label: "Toplu DM", icon: Send },
+    { to: "/admin/rozetler", label: "Rozet Ayarları", icon: ShieldCheck },
     { to: "/admin/seo", label: "SEO Ayarları", icon: Search },
     { to: "/admin/loglar", label: "Loglar", icon: ScrollText },
   ];

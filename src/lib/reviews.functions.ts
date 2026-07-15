@@ -157,3 +157,56 @@ export const adminSetVerified = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/** Admin: set trust level 0-3 */
+export const adminSetTrustLevel = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { userId: string; level: number }) => d)
+  .handler(async ({ data, context }) => {
+    const { error } = await (context.supabase.rpc as any)("admin_set_trust_level", {
+      _user_id: data.userId,
+      _level: data.level,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Bulk owner stats for listing cards — public */
+export const getOwnerStatsBulk = createServerFn({ method: "POST" })
+  .inputValidator((d: { userIds: string[] }) => d)
+  .handler(async ({ data }) => {
+    if (!data.userIds.length) return {} as Record<string, { avg: number; count: number }>;
+    const { createClient } = await import("@supabase/supabase-js");
+    const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+    const supabase = createClient(process.env.SUPABASE_URL!, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data: rows } = await (supabase as any).rpc("listings_owner_stats", {
+      _user_ids: data.userIds,
+    });
+    const out: Record<string, { avg: number; count: number }> = {};
+    for (const r of (rows ?? []) as Array<{ user_id: string; avg_rating: number; review_count: number }>) {
+      out[r.user_id] = { avg: Number(r.avg_rating) || 0, count: r.review_count };
+    }
+    return out;
+  });
+
+/** The current user's own reviews (all statuses via RLS) */
+export const getMyReviews = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any)
+      .from("reviews")
+      .select("id, rating, comment, status, admin_note, created_at, reviewee_id")
+      .eq("reviewer_id", context.userId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    const rows = (data ?? []) as Array<{ id: string; rating: number; comment: string; status: string; admin_note: string | null; created_at: string; reviewee_id: string }>;
+    const ids = Array.from(new Set(rows.map((r) => r.reviewee_id)));
+    let names: Record<string, string> = {};
+    if (ids.length) {
+      const { data: profs } = await context.supabase.from("profiles").select("id, full_name").in("id", ids);
+      names = Object.fromEntries((profs ?? []).map((p) => [p.id, p.full_name ?? "Üye"]));
+    }
+    return rows.map((r) => ({ ...r, reviewee_name: names[r.reviewee_id] ?? "Üye" }));
+  });

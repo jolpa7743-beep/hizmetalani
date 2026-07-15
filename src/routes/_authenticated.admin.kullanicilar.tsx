@@ -1,16 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { z } from "zod";
 import { adminListUsers, adminToggleRole, adminDeleteUser } from "@/lib/admin.functions";
-import { adminSetVerified } from "@/lib/reviews.functions";
+import { adminSetTrustLevel } from "@/lib/reviews.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle, BadgeCheck, BadgeX } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle } from "lucide-react";
+import { TRUST_LEVELS, trustBadgeMeta } from "@/lib/trust";
 import { toast } from "sonner";
 
+const searchSchema = z.object({ q: z.string().optional() });
+
 export const Route = createFileRoute("/_authenticated/admin/kullanicilar")({
+  validateSearch: searchSchema,
   component: AdminUsers,
 });
 
@@ -18,16 +24,19 @@ type AdminUser = {
   id: string; email: string; created_at: string; last_sign_in_at: string | null;
   email_confirmed_at: string | null; full_name: string | null; avatar_url: string | null;
   city: string | null; district: string | null; phone: string | null;
-  is_verified: boolean; roles: string[];
+  is_verified: boolean; trust_level: number; roles: string[];
 };
 
 function AdminUsers() {
   const fetchUsers = useServerFn(adminListUsers);
   const toggleRole = useServerFn(adminToggleRole);
   const deleteUser = useServerFn(adminDeleteUser);
-  const setVerified = useServerFn(adminSetVerified);
+  const setTrust = useServerFn(adminSetTrustLevel);
   const qc = useQueryClient();
-  const [q, setQ] = useState("");
+  const search = Route.useSearch();
+  const [q, setQ] = useState(search.q ?? "");
+
+  useEffect(() => { if (search.q) setQ(search.q); }, [search.q]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -60,10 +69,10 @@ function AdminUsers() {
     }
   };
 
-  const onToggleVerified = async (userId: string, verified: boolean) => {
+  const onSetTrust = async (userId: string, level: number) => {
     try {
-      await setVerified({ data: { userId, verified: !verified } });
-      toast.success(verified ? "Güven rozeti kaldırıldı" : "Güven rozeti verildi");
+      await setTrust({ data: { userId, level } });
+      toast.success("Güven seviyesi güncellendi");
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Hata");
@@ -132,11 +141,14 @@ function AdminUsers() {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {isAdmin && <Badge className="bg-brand">Admin</Badge>}
-                        {u.is_verified && (
-                          <Badge className="bg-emerald-600 gap-1">
-                            <BadgeCheck className="size-3" /> Güven Rozeti
-                          </Badge>
-                        )}
+                        {u.trust_level > 0 && (() => {
+                          const meta = trustBadgeMeta(u.trust_level);
+                          return (
+                            <Badge className={`${meta.className} gap-1`}>
+                              <meta.icon className="size-3" /> {meta.label}
+                            </Badge>
+                          );
+                        })()}
                         {u.email_confirmed_at ? (
                           <Badge variant="secondary" className="gap-1">
                             <CheckCircle2 className="size-3" /> Doğrulandı
@@ -152,16 +164,20 @@ function AdminUsers() {
                       {new Date(u.created_at).toLocaleDateString("tr-TR")}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onToggleVerified(u.id, u.is_verified)}
-                          title={u.is_verified ? "Güven rozetini kaldır" : "Güven rozeti ver"}
-                          className={u.is_verified ? "text-emerald-600" : ""}
+                      <div className="flex justify-end gap-1 items-center">
+                        <Select
+                          value={String(u.trust_level)}
+                          onValueChange={(v) => onSetTrust(u.id, Number(v))}
                         >
-                          {u.is_verified ? <BadgeX className="size-4" /> : <BadgeCheck className="size-4" />}
-                        </Button>
+                          <SelectTrigger className="h-8 w-[140px]" aria-label="Güven Seviyesi">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TRUST_LEVELS.map((t) => (
+                              <SelectItem key={t.level} value={String(t.level)}>{t.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <Button
                           size="sm"
                           variant="outline"

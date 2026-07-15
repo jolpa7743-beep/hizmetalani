@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Fragment, useState } from "react";
 import { z } from "zod";
 import { Search, X, SlidersHorizontal, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ListingCard, type ListingRow } from "@/components/ListingCard";
 import { AdSlot } from "@/components/AdSlot";
+import { getOwnerStatsBulk } from "@/lib/reviews.functions";
 import { CATEGORIES, type CategoryKey } from "@/lib/categories";
 import { ILLER, getIlceler } from "@/lib/turkiye";
 import { Input } from "@/components/ui/input";
@@ -60,7 +62,7 @@ function HomePage() {
     queryFn: async () => {
       let query = supabase
         .from("listings")
-        .select("id, title, type, category, city, district, price, price_type, created_at, description, view_count")
+        .select("id, user_id, title, type, category, city, district, price, price_type, created_at, description, view_count")
         .eq("status", "active")
         .limit(90);
 
@@ -82,6 +84,15 @@ function HomePage() {
       if (error) throw error;
       return (data ?? []) as ListingRow[];
     },
+  });
+
+  const fetchStats = useServerFn(getOwnerStatsBulk);
+  const ownerIds = Array.from(new Set((listings ?? []).map((l) => l.user_id).filter((x): x is string => !!x)));
+  const { data: ownerStats } = useQuery({
+    queryKey: ["owner-stats", ownerIds.slice().sort().join(",")],
+    queryFn: () => fetchStats({ data: { userIds: ownerIds } }),
+    enabled: ownerIds.length > 0,
+    staleTime: 60_000,
   });
 
   const setParam = (key: string, val: string | undefined) => {
@@ -242,7 +253,7 @@ function HomePage() {
               )}
               {listings?.map((item, i) => (
                 <Fragment key={item.id}>
-                  <ListingCard item={item} />
+                  <ListingCard item={item} ownerRating={item.user_id ? ownerStats?.[item.user_id] : undefined} />
                   {i === 5 && (
                     <div className="col-span-full">
                       <AdSlot slot="sidebar" />

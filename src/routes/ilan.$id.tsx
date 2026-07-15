@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,6 +22,8 @@ import { MapPin, Clock, ShieldCheck, MessageSquare, ArrowLeft, Eye, Tag, Buildin
 import { toast } from "sonner";
 import { AdSlot } from "@/components/AdSlot";
 import { UserReviews } from "@/components/UserReviews";
+import { getSiteSettings } from "@/lib/settings.functions";
+import { shouldShowBadge, trustBadgeMeta, type BadgeVisibility } from "@/lib/trust";
 
 // Loader ile ilan verisini önden çekip head() içinde title/description/OG üretiyoruz.
 const listingQueryOptions = (id: string) => ({
@@ -35,7 +38,7 @@ const listingQueryOptions = (id: string) => ({
     if (!listing) return null;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name,avatar_url,is_verified,city,district,created_at")
+      .select("full_name,avatar_url,is_verified,trust_level,city,district,created_at")
       .eq("id", listing.user_id)
       .maybeSingle();
     return { listing: listing as unknown as Listing, profile: (profile ?? null) as Profile | null };
@@ -161,6 +164,7 @@ type Profile = {
   full_name: string | null;
   avatar_url: string | null;
   is_verified: boolean;
+  trust_level: number | null;
   city: string | null;
   district: string | null;
   created_at: string;
@@ -210,6 +214,13 @@ function ListingDetail() {
   const [authDialog, setAuthDialog] = useState(false);
 
   const { data, isLoading, error } = useQuery(listingQueryOptions(id));
+  const fetchSettings = useServerFn(getSiteSettings);
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings-public"],
+    queryFn: () => fetchSettings(),
+    staleTime: 5 * 60_000,
+  });
+  const badgeVisibility: BadgeVisibility = (settings?.trust_badge_visibility as BadgeVisibility | undefined) ?? "all";
 
   useEffect(() => {
     supabase.rpc("increment_listing_view", { _id: id }).then(() => {});
@@ -435,11 +446,8 @@ function ListingDetail() {
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <div className="font-medium truncate flex items-center gap-1">
+                <div className="font-medium truncate">
                   {profile?.full_name ?? "İlan Sahibi"}
-                  {profile?.is_verified && (
-                    <ShieldCheck className="size-4 text-emerald-600" aria-label="Doğrulanmış üye" />
-                  )}
                 </div>
                 <div className="text-xs text-muted-foreground truncate">
                   {profile?.city ?? listing.city}
@@ -447,11 +455,16 @@ function ListingDetail() {
                 </div>
               </div>
             </div>
-            {profile?.is_verified && (
-              <div className="mt-3 flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <BadgeCheck className="size-3.5" /> Bu üyeye güven rozeti verilmiştir
-              </div>
-            )}
+            {(() => {
+              const lvl = profile?.trust_level ?? (profile?.is_verified ? 1 : 0);
+              if (!shouldShowBadge(lvl, badgeVisibility)) return null;
+              const meta = trustBadgeMeta(lvl);
+              return (
+                <div className={`mt-3 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md ${meta.className}`}>
+                  <meta.icon className="size-3.5" /> {meta.label}
+                </div>
+              );
+            })()}
             {profile?.created_at && (
               <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <CalendarDays className="size-3.5" />
