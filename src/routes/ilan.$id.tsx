@@ -479,6 +479,27 @@ function ListingDetail() {
                 Üyelik: {new Date(profile.created_at).toLocaleDateString("tr-TR", { year: "numeric", month: "long" })}
               </div>
             )}
+
+            {/* Puan özeti + profili gör */}
+            <div className="mt-3 pt-3 border-t border-border">
+              {ownerReviews && ownerReviews.count > 0 ? (
+                <div className="flex items-center gap-2 text-sm">
+                  <StarRow value={ownerReviews.avg} />
+                  <span className="font-semibold tabular-nums">{ownerReviews.avg.toFixed(1)}</span>
+                  <span className="text-xs text-muted-foreground">({ownerReviews.count} değerlendirme)</span>
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground">Henüz değerlendirme yok</div>
+              )}
+              <Link
+                to="/uye/$id"
+                params={{ id: listing.user_id }}
+                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
+              >
+                Profili ve yorumları gör →
+              </Link>
+            </div>
+
             {!isOwner ? (
               <Button
                 onClick={contactSeller}
