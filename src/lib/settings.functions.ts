@@ -16,6 +16,7 @@ export type SiteSettings = {
   announcement_banner: string | null;
   announcement_active: boolean;
   adsense_enabled: boolean;
+  adsense_test_mode: boolean;
   adsense_slot_header: string | null;
   adsense_slot_in_article: string | null;
   adsense_slot_sidebar: string | null;
