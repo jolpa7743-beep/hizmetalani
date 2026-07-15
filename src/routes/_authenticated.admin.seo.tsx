@@ -82,6 +82,15 @@ function AdminSEO() {
               </div>
               <Switch id="ads-enabled" checked={form.adsense_enabled ?? false} onCheckedChange={(v) => set("adsense_enabled", v)} />
             </div>
+            <div className="flex items-center justify-between gap-3 rounded-md border border-dashed border-amber-400/60 bg-amber-50/40 dark:bg-amber-950/20 px-3 py-2">
+              <div>
+                <Label htmlFor="ads-test" className="text-sm">Test modu</Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Açıksa reklamlar <code>data-adtest="on"</code> ile yüklenir; canlıda gerçek reklam yerine test görselleri gösterilir. AdSense onayı öncesi veya geliştirme sırasında kullanın.
+                </p>
+              </div>
+              <Switch id="ads-test" checked={form.adsense_test_mode ?? false} onCheckedChange={(v) => set("adsense_test_mode", v)} />
+            </div>
             <div><Label>Publisher ID</Label><Input value={form.adsense_publisher_id ?? ""} onChange={(e) => set("adsense_publisher_id", e.target.value)} placeholder="ca-pub-XXXXXXXXXXXXXXXX" />
               <p className="text-xs text-muted-foreground mt-1"><code>ca-pub-</code> ön ekiyle birlikte yazın. Bu değer aynı zamanda <code>/ads.txt</code> dosyasında da otomatik yayınlanır.</p></div>
             <div className="grid md:grid-cols-2 gap-4">

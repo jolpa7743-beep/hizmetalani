@@ -89,6 +89,71 @@ export type Database = {
         }
         Relationships: []
       }
+      category_groups: {
+        Row: {
+          created_at: string
+          id: number
+          key: string
+          label: string
+          sort_order: number
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          key: string
+          label: string
+          sort_order?: number
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          key?: string
+          label?: string
+          sort_order?: number
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      category_overrides: {
+        Row: {
+          group_key: string | null
+          key: string
+          label: string | null
+          short_label: string | null
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          group_key?: string | null
+          key: string
+          label?: string | null
+          short_label?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          group_key?: string | null
+          key?: string
+          label?: string | null
+          short_label?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_overrides_group_key_fkey"
+            columns: ["group_key"]
+            isOneToOne: false
+            referencedRelation: "category_groups"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
@@ -453,6 +518,7 @@ export type Database = {
           adsense_slot_header: string | null
           adsense_slot_in_article: string | null
           adsense_slot_sidebar: string | null
+          adsense_test_mode: boolean
           announcement_active: boolean
           announcement_banner: string | null
           contact_email: string
@@ -475,6 +541,7 @@ export type Database = {
           adsense_slot_header?: string | null
           adsense_slot_in_article?: string | null
           adsense_slot_sidebar?: string | null
+          adsense_test_mode?: boolean
           announcement_active?: boolean
           announcement_banner?: string | null
           contact_email?: string
@@ -497,6 +564,7 @@ export type Database = {
           adsense_slot_header?: string | null
           adsense_slot_in_article?: string | null
           adsense_slot_sidebar?: string | null
+          adsense_test_mode?: boolean
           announcement_active?: boolean
           announcement_banner?: string | null
           contact_email?: string

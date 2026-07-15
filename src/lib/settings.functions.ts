@@ -16,6 +16,7 @@ export type SiteSettings = {
   announcement_banner: string | null;
   announcement_active: boolean;
   adsense_enabled: boolean;
+  adsense_test_mode: boolean;
   adsense_slot_header: string | null;
   adsense_slot_in_article: string | null;
   adsense_slot_sidebar: string | null;
@@ -52,7 +53,8 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("site_settings")
-      .update({ ...data, updated_at: new Date().toISOString() })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update({ ...(data as any), updated_at: new Date().toISOString() })
       .eq("id", 1);
     if (error) throw new Error(error.message);
     return { ok: true };

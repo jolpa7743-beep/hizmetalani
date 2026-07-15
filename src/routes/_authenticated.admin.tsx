@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useRouterState, redirect } from "@tansta
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText, Search, MessageCircle, Megaphone, Send, Star, Flag, ShieldCheck, Inbox } from "lucide-react";
+import { LayoutDashboard, Users, ListChecks, ArrowLeft, ScrollText, Search, MessageCircle, Megaphone, Send, Star, Flag, ShieldCheck, Inbox, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminModerationCounts } from "@/lib/admin.functions";
 
@@ -30,6 +30,7 @@ function AdminLayout() {
     { to: "/admin/bildirimler", label: "Bildirim Merkezi", icon: Inbox, count: (counts?.pendingReviews ?? 0) + (counts?.openReports ?? 0) },
     { to: "/admin/kullanicilar", label: "Kullanıcılar", icon: Users, count: 0 },
     { to: "/admin/ilanlar", label: "İlanlar", icon: ListChecks, count: 0 },
+    { to: "/admin/kategoriler", label: "Kategoriler", icon: Layers, count: 0 },
     { to: "/admin/yorumlar", label: "Yorumlar", icon: Star, count: counts?.pendingReviews ?? 0 },
     { to: "/admin/raporlar", label: "Şikayetler", icon: Flag, count: counts?.openReports ?? 0 },
     { to: "/admin/ticketlar", label: "Destek Talepleri", icon: MessageCircle, count: counts?.openTickets ?? 0 },
