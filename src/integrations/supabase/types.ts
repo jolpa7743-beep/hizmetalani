@@ -757,7 +757,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          created_at: string | null
+          district: string | null
+          full_name: string | null
+          id: string | null
+          is_verified: boolean | null
+          trust_level: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string | null
+          district?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          trust_level?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string | null
+          district?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          trust_level?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_broadcast_dm: { Args: { _body: string }; Returns: number }
