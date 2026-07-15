@@ -795,6 +795,36 @@ export type Database = {
         Args: { _user_id: string; _verified: boolean }
         Returns: undefined
       }
+      get_my_profile: {
+        Args: never
+        Returns: {
+          avatar_url: string | null
+          banned_reason: string | null
+          bio: string | null
+          birth_year: number | null
+          city: string | null
+          created_at: string
+          district: string | null
+          full_name: string | null
+          gender: string | null
+          id: string
+          is_banned: boolean
+          is_verified: boolean
+          languages: string[] | null
+          phone: string | null
+          phone_verified: boolean
+          skills: string[] | null
+          trust_level: number
+          updated_at: string
+          website: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -91,17 +91,18 @@ function PersonalInfoCard() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle().then(({ data, error }) => {
+    supabase.rpc("get_my_profile").then(({ data, error }) => {
       if (error) toast.error(error.message);
-      if (data) {
+      const row = Array.isArray(data) ? data[0] : data;
+      if (row) {
         setForm({
-          full_name: data.full_name ?? "",
-          phone: data.phone ?? "",
-          city: data.city ?? "",
-          district: data.district ?? "",
-          bio: data.bio ?? "",
+          full_name: row.full_name ?? "",
+          phone: row.phone ?? "",
+          city: row.city ?? "",
+          district: row.district ?? "",
+          bio: row.bio ?? "",
         });
-        setTrustLevel((data as unknown as { trust_level?: number }).trust_level ?? 0);
+        setTrustLevel((row as unknown as { trust_level?: number }).trust_level ?? 0);
       }
       setLoading(false);
     });
