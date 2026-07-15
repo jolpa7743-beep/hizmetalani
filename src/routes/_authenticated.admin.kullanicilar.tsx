@@ -3,13 +3,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { z } from "zod";
-import { adminListUsers, adminToggleRole, adminDeleteUser } from "@/lib/admin.functions";
+import { adminListUsers, adminToggleRole, adminDeleteUser, adminUpdateProfile } from "@/lib/admin.functions";
 import { adminSetTrustLevel } from "@/lib/reviews.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Shield, ShieldOff, Trash2, Search, CheckCircle2, XCircle, Pencil } from "lucide-react";
 import { TRUST_LEVELS, trustBadgeMeta } from "@/lib/trust";
 import { toast } from "sonner";
 
