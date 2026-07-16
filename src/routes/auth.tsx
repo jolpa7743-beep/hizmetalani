@@ -1,10 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
+import { getSiteSettings } from "@/lib/settings.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,6 +48,16 @@ function AuthPage() {
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const fetchSettings = useServerFn(getSiteSettings);
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings-public"],
+    queryFn: () => fetchSettings(),
+    staleTime: 5 * 60_000,
+  });
+  const googleEnabled = settings?.google_login_enabled ?? true;
+
+
 
   const onForgotPassword = async () => {
     if (!form.email || emailError) {
@@ -154,34 +167,39 @@ function AuthPage() {
             </TabsList>
 
             <div className="pt-4 space-y-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-11"
-                onClick={onGoogle}
-                disabled={loading !== null}
-              >
-                {loading === "google" ? (
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                ) : (
-                  <svg className="size-4 mr-2" viewBox="0 0 48 48" aria-hidden>
-                    <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6c1.9-5.6 7.2-9.7 13.6-9.7z"/>
-                    <path fill="#4285F4" d="M46.5 24.6c0-1.6-.2-3.1-.4-4.6H24v9.1h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
-                    <path fill="#FBBC05" d="M10.4 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.8-6C1 16.7 0 20.2 0 24s1 7.3 2.6 10.5l7.8-6z"/>
-                    <path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.8l-7.6-5.9c-2.1 1.4-4.8 2.3-8.4 2.3-6.4 0-11.8-4.1-13.7-9.7l-7.8 6C6.5 42.6 14.6 48 24 48z"/>
-                  </svg>
-                )}
-                Google ile devam et
-              </Button>
+              {googleEnabled && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-11"
+                    onClick={onGoogle}
+                    disabled={loading !== null}
+                  >
+                    {loading === "google" ? (
+                      <Loader2 className="size-4 mr-2 animate-spin" />
+                    ) : (
+                      <svg className="size-4 mr-2" viewBox="0 0 48 48" aria-hidden>
+                        <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6c1.9-5.6 7.2-9.7 13.6-9.7z"/>
+                        <path fill="#4285F4" d="M46.5 24.6c0-1.6-.2-3.1-.4-4.6H24v9.1h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
+                        <path fill="#FBBC05" d="M10.4 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.8-4.5l-7.8-6C1 16.7 0 20.2 0 24s1 7.3 2.6 10.5l7.8-6z"/>
+                        <path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.8l-7.6-5.9c-2.1 1.4-4.8 2.3-8.4 2.3-6.4 0-11.8-4.1-13.7-9.7l-7.8 6C6.5 42.6 14.6 48 24 48z"/>
+                      </svg>
+                    )}
+                    Google ile devam et
+                  </Button>
 
-              <div className="relative py-2">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">veya</span>
-                </div>
-              </div>
+                  <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-2 text-muted-foreground">veya</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
 
               <form onSubmit={onEmailSubmit} className="space-y-3">
                 <TabsContent value="signup" className="space-y-3 m-0">

@@ -25,6 +25,7 @@ export type SiteSettings = {
   signup_email_otp_enabled: boolean;
   password_reset_otp_enabled: boolean;
   badge_email_otp_enabled: boolean;
+  google_login_enabled: boolean;
   updated_at: string;
 };
 

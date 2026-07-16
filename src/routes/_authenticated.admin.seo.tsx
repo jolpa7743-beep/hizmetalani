@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Save, Search, Globe, BarChart3, ShieldCheck, Radio, Megaphone, KeyRound } from "lucide-react";
+import { Save, Search, Globe, BarChart3, ShieldCheck, Radio, Megaphone, KeyRound, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -161,6 +161,26 @@ function AdminSEO() {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><LogIn className="size-4" /> Giriş Yöntemleri</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <Label htmlFor="google-login" className="text-sm">Google ile Giriş</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Kapatırsanız giriş / üye ol ekranındaki "Google ile devam et" düğmesi gizlenir.
+                Google OAuth kimlik bilgileri (Client ID / Secret) Lovable Cloud tarafından otomatik yönetilir;
+                kendi Google Cloud hesabınızı kullanmak isterseniz Backend panelinden ayarlayabilirsiniz.
+              </p>
+            </div>
+            <Switch id="google-login" checked={form.google_login_enabled ?? true} onCheckedChange={(v) => set("google_login_enabled", v)} />
+          </div>
+        </CardContent>
+      </Card>
+
 
       <div className="flex gap-3">
         <Button onClick={() => save.mutate(form)} disabled={save.isPending} className="bg-brand hover:bg-brand/90">
