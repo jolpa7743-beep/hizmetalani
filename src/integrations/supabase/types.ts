@@ -525,6 +525,7 @@ export type Database = {
           contact_email: string
           contact_phone: string | null
           ga_measurement_id: string | null
+          google_login_enabled: boolean
           id: number
           og_image_url: string | null
           password_reset_otp_enabled: boolean
@@ -551,6 +552,7 @@ export type Database = {
           contact_email?: string
           contact_phone?: string | null
           ga_measurement_id?: string | null
+          google_login_enabled?: boolean
           id?: number
           og_image_url?: string | null
           password_reset_otp_enabled?: boolean
@@ -577,6 +579,7 @@ export type Database = {
           contact_email?: string
           contact_phone?: string | null
           ga_measurement_id?: string | null
+          google_login_enabled?: boolean
           id?: number
           og_image_url?: string | null
           password_reset_otp_enabled?: boolean
