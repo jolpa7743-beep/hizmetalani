@@ -80,6 +80,7 @@ function AdminLayout() {
     {
       key: "comms", label: "İletişim", icon: Megaphone,
       items: [
+        { to: "/admin/mesajlar", label: "Kullanıcı Mesajları", icon: MessageCircle },
         { to: "/admin/duyurular", label: "Duyurular", icon: Megaphone },
         { to: "/admin/yayin", label: "Toplu DM", icon: Send },
       ],
