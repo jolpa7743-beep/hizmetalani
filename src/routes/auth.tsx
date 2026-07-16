@@ -322,31 +322,6 @@ function AuthPage() {
                 </Button>
               </form>
 
-              <div className="rounded-lg border border-dashed border-brand/40 bg-brand/5 p-3 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-medium text-brand">
-                  <Sparkles className="size-3.5" /> Demo Hesaplar
-                </div>
-                <p className="text-[11px] text-muted-foreground">
-                  Test için hazır hesaplar. İlk kez kullanıyorsanız "Oluştur" ile hesapları hazırlayın.
-                </p>
-                <div className="grid grid-cols-3 gap-1.5">
-                  <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => fillDemo("demo")}>
-                    demo1234
-                  </Button>
-                  <Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => fillDemo("admin")}>
-                    admin123
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="h-8 text-xs bg-brand hover:bg-brand/90"
-                    onClick={runSeed}
-                    disabled={loading !== null}
-                  >
-                    {loading === "seed" ? <Loader2 className="size-3 animate-spin" /> : "Oluştur"}
-                  </Button>
-                </div>
-              </div>
 
               <p className="text-xs text-muted-foreground text-center">
                 Devam ederek{" "}
