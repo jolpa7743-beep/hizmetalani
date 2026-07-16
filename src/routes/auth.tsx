@@ -49,6 +49,16 @@ function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const fetchSettings = useServerFn(getSiteSettings);
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings-public"],
+    queryFn: () => fetchSettings(),
+    staleTime: 5 * 60_000,
+  });
+  const googleEnabled = settings?.google_login_enabled ?? true;
+
+
+
   const onForgotPassword = async () => {
     if (!form.email || emailError) {
       setSubmitError("Sıfırlama bağlantısı için önce e-posta adresinizi girin");
