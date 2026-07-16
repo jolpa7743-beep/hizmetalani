@@ -203,3 +203,119 @@ export const adminModerationCounts = createServerFn({ method: "GET" })
       openTickets: tickets.count ?? 0,
     };
   });
+
+/** Admin: list all conversations across the site (bypasses RLS) */
+export const adminListConversations = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { search?: string; limit?: number } | undefined) => d ?? {})
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const limit = Math.min(data.limit ?? 100, 300);
+
+    const { data: convs, error } = await supabaseAdmin
+      .from("conversations")
+      .select("id, listing_id, user1_id, user2_id, last_message_at, created_at")
+      .order("last_message_at", { ascending: false })
+      .limit(limit);
+    if (error) throw new Error(error.message);
+    const rows = (convs ?? []) as Array<{ id: string; listing_id: string | null; user1_id: string; user2_id: string; last_message_at: string; created_at: string }>;
+    if (rows.length === 0) return [];
+
+    const userIds = Array.from(new Set(rows.flatMap((c) => [c.user1_id, c.user2_id])));
+    const listingIds = Array.from(new Set(rows.map((c) => c.listing_id).filter(Boolean) as string[]));
+    const convIds = rows.map((c) => c.id);
+
+    const [{ data: profs }, { data: listings }, { data: lastMsgs }, { data: counts }] = await Promise.all([
+      supabaseAdmin.from("profiles").select("id, full_name").in("id", userIds),
+      listingIds.length
+        ? supabaseAdmin.from("listings").select("id, title").in("id", listingIds)
+        : Promise.resolve({ data: [] as Array<{ id: string; title: string }> }),
+      supabaseAdmin.from("messages").select("conversation_id, content, created_at, sender_id").in("conversation_id", convIds).order("created_at", { ascending: false }),
+      supabaseAdmin.from("messages").select("conversation_id", { count: "exact", head: false }).in("conversation_id", convIds),
+    ]);
+
+    const nameMap = new Map((profs ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+    const listingMap = new Map((listings ?? []).map((l: { id: string; title: string }) => [l.id, l.title]));
+    const lastMap = new Map<string, { content: string; created_at: string; sender_id: string }>();
+    for (const m of (lastMsgs ?? []) as Array<{ conversation_id: string; content: string; created_at: string; sender_id: string }>) {
+      if (!lastMap.has(m.conversation_id)) lastMap.set(m.conversation_id, m);
+    }
+    const countMap = new Map<string, number>();
+    for (const m of (counts ?? []) as Array<{ conversation_id: string }>) {
+      countMap.set(m.conversation_id, (countMap.get(m.conversation_id) ?? 0) + 1);
+    }
+
+    let result = rows.map((c) => ({
+      id: c.id,
+      last_message_at: c.last_message_at,
+      user1: { id: c.user1_id, name: nameMap.get(c.user1_id) ?? "Kullanıcı" },
+      user2: { id: c.user2_id, name: nameMap.get(c.user2_id) ?? "Kullanıcı" },
+      listing: c.listing_id ? { id: c.listing_id, title: listingMap.get(c.listing_id) ?? "İlan" } : null,
+      last_message: lastMap.get(c.id) ?? null,
+      message_count: countMap.get(c.id) ?? 0,
+    }));
+
+    const q = (data.search ?? "").trim().toLowerCase();
+    if (q) {
+      result = result.filter((c) =>
+        c.user1.name?.toLowerCase().includes(q) ||
+        c.user2.name?.toLowerCase().includes(q) ||
+        c.listing?.title?.toLowerCase().includes(q) ||
+        c.last_message?.content?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  });
+
+/** Admin: full message thread of one conversation */
+export const adminGetConversation = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { conversationId: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: conv, error: cErr } = await supabaseAdmin
+      .from("conversations")
+      .select("id, listing_id, user1_id, user2_id, created_at")
+      .eq("id", data.conversationId)
+      .maybeSingle();
+    if (cErr) throw new Error(cErr.message);
+    if (!conv) throw new Error("Konuşma bulunamadı");
+
+    const { data: msgs, error: mErr } = await supabaseAdmin
+      .from("messages")
+      .select("id, sender_id, content, created_at, read_at")
+      .eq("conversation_id", data.conversationId)
+      .order("created_at", { ascending: true });
+    if (mErr) throw new Error(mErr.message);
+
+    const userIds = [conv.user1_id, conv.user2_id];
+    const { data: profs } = await supabaseAdmin.from("profiles").select("id, full_name").in("id", userIds);
+    const nameMap = new Map((profs ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+
+    let listing: { id: string; title: string } | null = null;
+    if (conv.listing_id) {
+      const { data: l } = await supabaseAdmin.from("listings").select("id, title").eq("id", conv.listing_id).maybeSingle();
+      if (l) listing = { id: l.id, title: l.title };
+    }
+
+    return {
+      id: conv.id,
+      created_at: conv.created_at,
+      user1: { id: conv.user1_id, name: nameMap.get(conv.user1_id) ?? "Kullanıcı" },
+      user2: { id: conv.user2_id, name: nameMap.get(conv.user2_id) ?? "Kullanıcı" },
+      listing,
+      messages: (msgs ?? []) as Array<{ id: string; sender_id: string; content: string; created_at: string; read_at: string | null }>,
+    };
+  });
+
